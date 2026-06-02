@@ -413,15 +413,28 @@ export function pantryScore(recipe, pantry) {
 
 // Generate the new ingredient object for the chosen substitute
 export function buildSwappedIngredient(ingredient, substituteText) {
-  // The substitute text describes the replacement but the ingredient
-  // object shape stays the same — we just change the name to reflect
-  // what they're actually using. The qty/unit stays because the recipe
-  // author already calibrated the amounts.
+  // Generate a clean ingredient name from the substitute text.
+  // "Equal parts: BBQ sauce + soy sauce + a pinch of Chinese five-spice" -> "BBQ sauce + soy sauce sub"
+  // We take the first ingredient mentioned (before + or ,) and add "sub" if it's a compound swap.
+  const isCompound = substituteText.includes('+') || substituteText.toLowerCase().includes('mix');
+  let shortName;
+  if (isCompound) {
+    // Extract the first ingredient from the compound
+    const first = substituteText
+      .replace(/^(equal parts:|mix:?|combine:?)\s*/i, '')
+      .split(/\s*[+,]\s*/)[0]
+      .replace(/\s*\(.*?\)/g, '')
+      .trim()
+      .slice(0, 30);
+    shortName = first + ' (sub for ' + (ingredient._swappedFrom || ingredient.name).split(' ')[0] + ')';
+  } else {
+    shortName = substituteText.split(' (')[0].split(',')[0].trim().slice(0, 50);
+  }
   return {
     ...ingredient,
-    name: substituteText.split(' (')[0].split(',')[0].trim().slice(0, 60),
+    name: shortName,
     _isSwapped: true,
-    _swappedFrom: ingredient.name,
+    _swappedFrom: ingredient._swappedFrom || ingredient.name,
     _swappedTo: substituteText
   };
 }
@@ -430,13 +443,34 @@ export function buildSwappedIngredient(ingredient, substituteText) {
 // Uses smart word-boundary replacement to avoid partial matches.
 export function rewriteStepForSwap(stepText, oldName, newSubstituteText) {
   if (!stepText || !oldName) return stepText;
-  // Try matching the most distinctive word from the old ingredient name
-  // (e.g. "garlic salt" → match "garlic salt" first, then "garlic" as fallback)
-  const words = oldName.toLowerCase().split(/\s+/);
-  const toReplace = words.length >= 2 ? oldName : oldName;
-  // Use a loose match: case-insensitive, word boundaries
-  const re = new RegExp('\\b' + toReplace.replace(/[-()]/g, '\\$&') + '\\b', 'gi');
-  // The replacement is the first clause of the substitute text (before any parenthetical)
-  const replacement = newSubstituteText.split('(')[0].split(',')[0].trim().slice(0, 40);
-  return stepText.replace(re, replacement);
+  
+  // Build a clean short replacement label for use in step text
+  const isCompound = newSubstituteText.includes('+') || newSubstituteText.toLowerCase().includes('mix');
+  const replacement = isCompound
+    ? '(your substitute)' // compound subs are described in ingredient list, not repeated in steps
+    : newSubstituteText.split('(')[0].split(',')[0].trim().slice(0, 40);
+  
+  // Try progressively shorter matches to find something in the step text.
+  // e.g. "hoisin sauce" → try "hoisin sauce", then "hoisin"
+  const nameParts = oldName.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim().split(/\s+/);
+  
+  let result = stepText;
+  // Try full name first
+  const candidates = [
+    oldName,                              // "hoisin sauce"
+    nameParts[0],                         // "hoisin"  
+    nameParts.slice(0, -1).join(' '),     // drop last word: "hoisin sauce" → "hoisin"
+    nameParts[nameParts.length - 1],      // last word: "sauce"
+  ].filter((c, i, arr) => c && c.length > 2 && arr.indexOf(c) === i); // unique, >2 chars
+  
+  for (const candidate of candidates) {
+    const escaped = candidate.replace(/[-()[\]{}*+?.,\^$|#\s]/g, '\$&');
+    const re = new RegExp('\b' + escaped + '\b', 'gi');
+    if (re.test(result)) {
+      result = result.replace(re, replacement);
+      break; // stop after first successful replacement
+    }
+  }
+  
+  return result;
 }

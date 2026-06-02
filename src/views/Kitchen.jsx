@@ -2144,6 +2144,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
           const prevPhase = idx > 0 ? (allSteps[idx - 1].phase || 'cook') : null;
           const thisPhase = step.phase || 'cook';
           const showPhaseHeader = thisPhase !== prevPhase;
+          const phaseStepCount = allSteps.filter(s => (s.phase || 'cook') === thisPhase).length;
           const phaseLabel = { prep: '🥣 Prep', cook: '🔥 Cook', plate: '🍽️ Plate & serve' }[thisPhase] || thisPhase;
           const phase = phaseConfig[step.phase || 'cook'] || phaseConfig.cook;
           const timer = timers[step.id];
@@ -2160,10 +2161,15 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                 marginTop: idx === 0 ? 0 : 8
               }}>
                 <div style={{ flex: 1, height: 1, background: '#E8DDC9' }} />
-                <span className="sans" style={{
-                  fontSize: 11, fontWeight: 700, color: phase.color,
-                  letterSpacing: '0.12em', textTransform: 'uppercase'
-                }}>{phaseLabel}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span className="sans" style={{
+                    fontSize: 11, fontWeight: 700, color: phase.color,
+                    letterSpacing: '0.12em', textTransform: 'uppercase'
+                  }}>{phaseLabel}</span>
+                  <span className="sans" style={{
+                    fontSize: 10, color: phase.color, opacity: 0.6
+                  }}>({phaseStepCount} step{phaseStepCount !== 1 ? 's' : ''})</span>
+                </div>
                 <div style={{ flex: 1, height: 1, background: '#E8DDC9' }} />
               </div>
             )}
@@ -2177,7 +2183,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
               transition: 'opacity 0.3s, border-color 0.3s'
             }}>
               {/* Step header row */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: bullets.length > 0 ? 10 : 0 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
                 {/* Check circle */}
                 <button
                   onClick={() => setChecked(prev => { const n = new Set(prev); isChecked ? n.delete(step.id) : n.add(step.id); return n; })}
@@ -2235,7 +2241,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
 
               {/* Timer progress bar */}
               {timer && !timer.done && step.timerSec > 0 && (
-                <div style={{ height: 3, background: '#F0E6D2', borderRadius: 2, margin: '6px 0 10px 36px', overflow: 'hidden' }}>
+                <div style={{ height: 3, background: '#F0E6D2', borderRadius: 2, margin: '0 0 10px 36px', overflow: 'hidden' }}>
                   <div style={{ height: '100%', background: phase.color, width: `${pct}%`, transition: 'width 1s linear' }} />
                 </div>
               )}
@@ -2258,6 +2264,38 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                     </div>
                   );
                 })}
+
+                {/* Prep note — shows where this prep output goes */}
+                {step.prepNote && !isChecked && (
+                  <div style={{
+                    marginTop: 8, padding: '6px 10px',
+                    background: phase.bg, borderRadius: 6,
+                    display: 'flex', alignItems: 'flex-start', gap: 6
+                  }}>
+                    <span style={{ fontSize: 12 }}>💡</span>
+                    <span className="sans" style={{ fontSize: 12, color: phase.color, lineHeight: 1.4, fontStyle: 'italic' }}>
+                      {step.prepNote}
+                    </span>
+                  </div>
+                )}
+
+                {/* parallelTask hint — shown when timer is long */}
+                {(() => {
+                  const parallel = detectParallelTask(step, allSteps, idx);
+                  if (!parallel.hasParallel || isChecked) return null;
+                  return (
+                    <div style={{
+                      marginTop: 8, padding: '6px 10px',
+                      background: '#FFF8F2', border: '1px solid #F5C9B0',
+                      borderRadius: 6, display: 'flex', gap: 6, alignItems: 'flex-start'
+                    }}>
+                      <Sparkles size={13} color="#A85C32" style={{ flexShrink: 0, marginTop: 1 }} />
+                      <span className="sans" style={{ fontSize: 12, color: '#5C4A3A', lineHeight: 1.4 }}>
+                        {parallel.suggestion}
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
             </React.Fragment>

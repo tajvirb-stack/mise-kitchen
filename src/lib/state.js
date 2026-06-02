@@ -254,8 +254,16 @@ export function useHouseholdData(household) {
     const dbPatch = { ...patch };
     if ('timeMin' in dbPatch) { dbPatch.time_min = dbPatch.timeMin; delete dbPatch.timeMin; }
     dbPatch.updated_at = new Date().toISOString();
+    // Optimistic update
     setRecipes(prev => prev.map(r => r.id === id ? { ...r, ...dbPatch } : r));
-    await supabase.from('recipes').update(dbPatch).eq('id', id);
+    // Persist to DB
+    const { error } = await supabase.from('recipes').update(dbPatch).eq('id', id);
+    if (error) {
+      console.error('updateRecipe error:', error);
+      // Revert optimistic update on failure
+      setRecipes(prev => prev.map(r => r.id === id ? { ...r, ...Object.fromEntries(Object.keys(dbPatch).map(k => [k, undefined])) } : r));
+      throw new Error('Failed to save: ' + error.message);
+    }
   };
   const deleteRecipe = async (id) => {
     const recipe = recipes.find(r => r.id === id);
