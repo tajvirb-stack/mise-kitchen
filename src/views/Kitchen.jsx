@@ -40,7 +40,7 @@ const NAV = [
   { id: 'prep', label: 'Prep', icon: Sparkles },
 ];
 
-export default function Kitchen({ user, household, members, data, weeklyIngredients, groceryList, prepTasks, modes, onSignOut }) {
+export default function Kitchen({ user, household, members, data, weeklyIngredients, groceryList, prepTasks, modes, onSignOut, updateHouseholdName }) {
   // Persist navigation state across iOS PWA backgrounding / phone-lock.
   // When iOS sleeps the browser, the JS context can be torn down and rebuilt,
   // resetting useState defaults. sessionStorage survives the backgrounding.
@@ -146,6 +146,7 @@ export default function Kitchen({ user, household, members, data, weeklyIngredie
           data={data}
           onClose={() => setShowSettings(false)}
           onSignOut={onSignOut}
+          updateHouseholdName={updateHouseholdName}
         />
       )}
     </div>
@@ -389,7 +390,7 @@ function MacroTargetsEditor() {
   );
 }
 
-function SettingsModal({ user, household, members, data, onClose, onSignOut }) {
+function SettingsModal({ user, household, members, data, onClose, onSignOut, updateHouseholdName }) {
   const [copied, setCopied] = useState(false);
   const [reseeding, setReseeding] = useState(false);
   const [reseedDone, setReseedDone] = useState(false);
@@ -456,7 +457,36 @@ function SettingsModal({ user, household, members, data, onClose, onSignOut }) {
         <section style={{ marginBottom: 24 }}>
           <h3 style={sectionH3}>Household</h3>
           <div style={{ background: '#FAF6EF', padding: 16, borderRadius: 8 }}>
-            <div className="serif" style={{ fontSize: 18, fontWeight: 500, marginBottom: 4 }}>{household.name}</div>
+            {/* Household name — editable */}
+            {(() => {
+              const [editingName, setEditingName] = React.useState(false);
+              const [draftName, setDraftName] = React.useState(household.name);
+              if (editingName) {
+                return (
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
+                    <input value={draftName} onChange={e => setDraftName(e.target.value)}
+                      style={{ flex: 1, padding: '6px 10px', border: '1px solid #E8DDC9', borderRadius: 6, fontSize: 16, fontFamily: 'inherit' }}
+                      onKeyDown={e => { if (e.key === 'Enter') { updateHouseholdName && updateHouseholdName(draftName); setEditingName(false); } if (e.key === 'Escape') setEditingName(false); }}
+                      autoFocus
+                    />
+                    <button onClick={() => { updateHouseholdName && updateHouseholdName(draftName); setEditingName(false); }}
+                      style={{ padding: '6px 12px', background: '#5C7A3A', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, cursor: 'pointer' }}
+                    >Save</button>
+                    <button onClick={() => setEditingName(false)}
+                      style={{ padding: '6px 12px', background: 'transparent', border: '1px solid #E8DDC9', borderRadius: 6, fontSize: 13, cursor: 'pointer', color: '#5C4A3A' }}
+                    >Cancel</button>
+                  </div>
+                );
+              }
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div className='serif' style={{ fontSize: 18, fontWeight: 500 }}>{household.name}</div>
+                  <button onClick={() => setEditingName(true)}
+                    style={{ padding: '2px 8px', fontSize: 11, background: 'transparent', border: '1px solid #E8DDC9', borderRadius: 4, color: '#8B6F47', cursor: 'pointer' }}
+                  >Rename</button>
+                </div>
+              );
+            })()}
             <div style={{ fontSize: 12, color: '#8B6F47', marginBottom: 12 }}>{members.length} member{members.length === 1 ? '' : 's'}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
               {members.map(m => (
@@ -762,6 +792,17 @@ function SnapMealPhotoButton() {
   );
 }
 
+
+// Only shows nutrition widgets once the user has set targets or logged at least one meal.
+// Prevents empty progress bars from cluttering the home screen for new users.
+function NutritionGate({ children }) {
+  const { totals, targets } = useNutritionContext();
+  const hasSetTargets = targets && (targets.calories_target > 0 || targets.protein_target > 0);
+  const hasLoggedFood = totals && (totals.calories > 0 || totals.protein > 0);
+  if (!hasSetTargets && !hasLoggedFood) return null;
+  return children;
+}
+
 function HomeView({ data, groceryList, setView, setActiveRecipeId }) {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
   const needCount = groceryList.filter(g => g.need > 0).length;
@@ -805,10 +846,10 @@ function HomeView({ data, groceryList, setView, setActiveRecipeId }) {
       <WhatCanIMakeTonight data={data} setView={setView} setActiveRecipeId={setActiveRecipeId} />
 
       {/* Daily nutrition tracking */}
-      <NutritionTotals date={new Date().toISOString().split('T')[0]} />
+      <NutritionGate><NutritionTotals date={new Date().toISOString().split('T')[0]} /></NutritionGate>
 
-      {/* Today's food log — per-meal breakdown */}
-      <FoodLog date={new Date().toISOString().split('T')[0]} />
+      {/* Today's food log — only shown after first use */}
+      <NutritionGate><FoodLog date={new Date().toISOString().split('T')[0]} /></NutritionGate>
 
       {/* Smart suggestions — only when actionable */}
       <SmartSuggestions date={new Date().toISOString().split('T')[0]} />
@@ -1183,7 +1224,20 @@ function RecipesView({ data, setView, setActiveRecipeId }) {
     const pickLunches = planFn(lunches, Math.min(7, lunches.length), data.pantry, macroTargets || true);
     const pickDinners = planFn(dinners, Math.min(7, dinners.length), data.pantry, macroTargets || true);
 
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    // Build day labels with actual dates starting from the current week's Monday
+  const days = (() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon...
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+    return ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((name, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const isToday = d.toDateString() === today.toDateString();
+      const dateStr = d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
+      return { code: name, label: name, dateStr, isToday };
+    });
+  })();
 
     // If we don't have 7 of a category, cycle through what we have (e.g. only 5 breakfasts → repeat 2)
     const cyclePick = (arr, i) => arr.length === 0 ? null : arr[i % arr.length];
@@ -1192,9 +1246,9 @@ function RecipesView({ data, setView, setActiveRecipeId }) {
       const bf = cyclePick(pickBreakfasts, i);
       const lu = cyclePick(pickLunches, i);
       const di = cyclePick(pickDinners, i);
-      if (bf) await data.addToWeek(bf.id, days[i], 'breakfast');
-      if (lu) await data.addToWeek(lu.id, days[i], 'lunch');
-      if (di) await data.addToWeek(di.id, days[i], 'dinner');
+      if (bf) await data.addToWeek(bf.id, days[i].code, 'breakfast');
+      if (lu) await data.addToWeek(lu.id, days[i].code, 'lunch');
+      if (di) await data.addToWeek(di.id, days[i].code, 'dinner');
     }
     setPlanning(false);
     setView('week');
@@ -1524,19 +1578,20 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
     setSwapping(true);
     try {
       const newIng = buildSwappedIngredient(ing, substituteText);
-      // Always look up the live ingredient from recipe to get _swappedFrom
       const liveIng = recipe.ingredients.find(x => x.id === ing.id) || ing;
       const originalName = liveIng._swappedFrom || liveIng.name || ing.name;
       const updatedIngredients = recipe.ingredients.map(i =>
         i.id === ing.id ? { ...i, name: newIng.name, _swappedFrom: originalName, _swappedTo: substituteText } : i
       );
-      // Rewrite any step that mentions the old ingredient name
-      // Rewrite steps: replace current displayed name (not original)
-      // because steps may already show a previously-swapped name
-      const updatedSteps = recipe.steps.map(s => ({
-        ...s,
-        text: rewriteStepForSwap(s.text, ing.name, substituteText)
-      }));
+      // Store swap in step.userText — this field takes priority over ALL alt modes
+      // (air fryer, paste, etc.) in fullyResolveStep. This ensures the swap is always
+      // visible regardless of what equipment/ingredient mode the user has selected.
+      const updatedSteps = recipe.steps.map(s => {
+        const currentText = s.userText || s.text; // rewrite from current displayed text
+        const newText = rewriteStepForSwap(currentText, ing.name, substituteText);
+        if (newText === currentText) return s; // no change, don't pollute userText
+        return { ...s, userText: newText };
+      });
       await data.updateRecipe(recipe.id, { ingredients: updatedIngredients, steps: updatedSteps });
       setSwapModal(null);
     } catch (e) {
@@ -1700,7 +1755,18 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
             {(recipe.ingredients || []).map(rawIng => {
               const ing = resolveIngredient(rawIng, ingMode);
-              const decoder = findComponentRecipe(ing.name);
+              // Split prep instructions out of ingredient names for cleaner display
+              // e.g. 'yellow onion, thinly sliced' -> name='yellow onion' note='thinly sliced'
+              const [ingDisplayName, ingPrepNote] = (() => {
+                const commaIdx = ing.name.indexOf(', ');
+                if (commaIdx > 0) {
+                  const prep = ing.name.slice(commaIdx + 2);
+                  const isPrep = /^(thinly|finely|roughly|coarsely|freshly|skin.on|bone.in|drained|rinsed|peeled|sliced|diced|chopped|minced|grated|shredded|crumbled|halved|trimmed|julienned|washed|loosely)/i.test(prep);
+                  if (isPrep) return [ing.name.slice(0, commaIdx), prep];
+                }
+                return [ing.name, null];
+              })();
+              const decoder = findComponentRecipe(ingDisplayName);
               // Strip parenthetical descriptions and trailing qualifiers before matching
               // e.g. 'ginger-garlic puree (made from 1 inch...)' → 'ginger-garlic puree'
               // e.g. 'carrot, peeled' → 'carrot'
@@ -1729,7 +1795,12 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
                         style={{ flex: 1, padding: '6px 10px', border: '1px solid #E8DDC9', borderRadius: 4, fontSize: 15, background: ing.protein ? '#FFF8F2' : '#fff' }} />
                     ) : (
                       <span style={{ flex: 1, color: ing.protein ? '#A85C32' : '#2A1F1A', fontWeight: ing.protein ? 500 : 400 }}>
-                        {ing.name}
+                        {ingDisplayName}
+                        {ingPrepNote && (
+                          <span className="sans" style={{ fontSize: 10, color: '#8B6F47', marginLeft: 4, fontStyle: 'italic' }}>
+                            ({ingPrepNote})
+                          </span>
+                        )}
                         {ing._isAlt && <span style={{ fontSize: 10, marginLeft: 6, padding: '2px 6px', background: '#FAF1DC', color: '#7A5C32', borderRadius: 3, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500 }}>{INGREDIENT_MODES[ingMode]?.shortLabel || 'alt'}</span>}
                         {ing.protein && <span style={{ fontSize: 10, marginLeft: 6, padding: '2px 6px', background: '#FFF0E0', color: '#A85C32', borderRadius: 3, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500 }}>protein</span>}
                         {decoder && (
@@ -2173,14 +2244,30 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                 <div style={{ flex: 1, height: 1, background: '#E8DDC9' }} />
               </div>
             )}
+            {isChecked ? (
+              // Collapsed view for completed steps
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '8px 12px', background: '#F0F5E8',
+                border: '1px solid #C5D9A8', borderLeft: '4px solid #5C7A3A',
+                borderRadius: 8, cursor: 'pointer'
+              }}
+              onClick={() => setChecked(prev => { const n = new Set(prev); n.delete(step.id); return n; })}
+              >
+                <Check size={14} color="#5C7A3A" style={{ flexShrink: 0 }} />
+                <span className="sans" style={{ fontSize: 13, color: '#5C7A3A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {step.text.split('.')[0].slice(0, 60)}{step.text.split('.')[0].length > 60 ? '…' : ''}
+                </span>
+                <span className="sans" style={{ fontSize: 10, color: '#5C7A3A', opacity: 0.6, flexShrink: 0 }}>tap to undo</span>
+              </div>
+            ) : (
             <div style={{
               background: '#fff',
-              border: `1px solid ${isChecked ? '#C5D9A8' : phase.border}`,
-              borderLeft: `4px solid ${isChecked ? '#5C7A3A' : phase.color}`,
+              border: `1px solid ${phase.border}`,
+              borderLeft: `4px solid ${phase.color}`,
               borderRadius: 10,
               padding: '14px 16px',
-              opacity: isChecked ? 0.5 : 1,
-              transition: 'opacity 0.3s, border-color 0.3s'
+              transition: 'border-color 0.3s'
             }}>
               {/* Step header row */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
@@ -2208,6 +2295,16 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                   borderRadius: 8, fontWeight: 600, letterSpacing: '0.08em',
                   textTransform: 'uppercase', marginTop: 4
                 }}>{phase.label}</span>
+                {/* Time estimate for active steps without a countdown timer */}
+                {!timer && step.phase !== 'plate' && (
+                  <span className="sans" style={{ fontSize: 10, color: '#8B6F47', marginTop: 5, flexShrink: 0 }}>
+                    {step.text.toLowerCase().includes('stir constantly') || step.text.toLowerCase().includes('toss') ? '~2 min' :
+                     step.text.toLowerCase().includes('sear') || step.text.toLowerCase().includes('brown') ? '~4 min' :
+                     step.text.toLowerCase().includes('chop') || step.text.toLowerCase().includes('slice') || step.text.toLowerCase().includes('dice') || step.text.toLowerCase().includes('mince') ? '~3 min' :
+                     step.text.toLowerCase().includes('whisk') || step.text.toLowerCase().includes('mix') || step.text.toLowerCase().includes('toss') ? '~2 min' :
+                     step.text.toLowerCase().includes('preheat') ? '~1 min' : null}
+                  </span>
+                )}
 
                 {/* Timer controls — inline with header */}
                 {timer && (
@@ -2298,6 +2395,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                 })()}
               </div>
             </div>
+            )}
             </React.Fragment>
           );
         })}
@@ -2433,7 +2531,20 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
 
 // -------- WEEK VIEW --------
 function WeekView({ data, setView, setActiveRecipeId }) {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  // Build day labels with actual dates starting from the current week's Monday
+  const days = (() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon...
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+    return ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((name, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const isToday = d.toDateString() === today.toDateString();
+      const dateStr = d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
+      return { code: name, label: name, dateStr, isToday };
+    });
+  })();
 
   // Compute weekly summary
   const summary = useMemo(() => {
@@ -2532,13 +2643,24 @@ function WeekView({ data, setView, setActiveRecipeId }) {
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
-        {days.map(day => {
+        {days.map(dayObj => {
+        const day = typeof dayObj === 'string' ? dayObj : dayObj.code;
           const dayPlans = data.weekPlan.filter(w => w.day === day);
           const slotOrder = ['breakfast', 'lunch', 'dinner'];
           const slotLabels = { breakfast: '🌅 Breakfast', lunch: '🥗 Lunch', dinner: '🍽️ Dinner' };
           return (
-            <div key={day} style={{ background: '#fff', border: '1px solid #E8DDC9', borderRadius: 10, padding: 12 }}>
-              <div className="serif" style={{ fontSize: 16, fontWeight: 500, marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #F0E6D2' }}>{day}</div>
+            <div key={day} style={{
+              background: '#fff',
+              border: `1px solid ${dayObj.isToday ? '#A85C32' : '#E8DDC9'}`,
+              borderRadius: 10, padding: 12
+            }}>
+              <div style={{ marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #F0E6D2' }}>
+                <div className="serif" style={{ fontSize: 16, fontWeight: 500, color: dayObj.isToday ? '#A85C32' : '#2A1F1A' }}>
+                  {day}
+                  {dayObj.isToday && <span className="sans" style={{ fontSize: 10, marginLeft: 6, padding: '1px 6px', background: '#A85C32', color: '#FAF6EF', borderRadius: 8, verticalAlign: 'middle', fontWeight: 600 }}>Today</span>}
+                </div>
+                <div className="sans" style={{ fontSize: 10, color: '#8B6F47', marginTop: 1 }}>{dayObj.dateStr}</div>
+              </div>
               {slotOrder.map(slot => {
                 const slotPlans = dayPlans.filter(w => (w.meal_slot || 'dinner') === slot);
                 return (
@@ -3043,6 +3165,46 @@ function GroceryView({ groceryList, data, household }) {
 }
 
 // -------- PANTRY --------
+
+// Perishable keywords — items that typically expire within 1-2 weeks
+const PERISHABLE_KEYWORDS = [
+  'chicken','beef','pork','salmon','fish','turkey','shrimp','lamb','steak','mince',
+  'milk','yogurt','cream','cheese','butter','cottage cheese','sour cream',
+  'eggs','egg',
+  'spinach','lettuce','arugula','kale','herbs','parsley','cilantro','basil','mint',
+  'strawberr','raspberr','blueberr','blackberr','grape','cherry',
+  'avocado','tomato','zucchini','cucumber','bell pepper','broccoli','cauliflower',
+  'mushroom','asparagus','green onion','leek',
+  'tofu','tempeh',
+];
+const DEFAULT_EXPIRY_DAYS = {
+  chicken: 3, beef: 4, pork: 4, salmon: 2, fish: 2, turkey: 3, shrimp: 2,
+  milk: 7, yogurt: 14, cream: 10, butter: 30, 'sour cream': 14, 'cottage cheese': 7,
+  eggs: 21, egg: 21,
+  spinach: 5, lettuce: 7, herbs: 7, parsley: 7, cilantro: 7, basil: 5,
+  strawberr: 5, raspberr: 3, blueberr: 7, avocado: 4, tomato: 7,
+  mushroom: 7, asparagus: 5, broccoli: 7, cauliflower: 10, zucchini: 7,
+  tofu: 5, tempeh: 7,
+};
+function getPerishableExpiry(name) {
+  const lower = name.toLowerCase();
+  for (const [kw, days] of Object.entries(DEFAULT_EXPIRY_DAYS)) {
+    if (lower.includes(kw)) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0, 10);
+    }
+  }
+  for (const kw of PERISHABLE_KEYWORDS) {
+    if (lower.includes(kw)) {
+      const d = new Date();
+      d.setDate(d.getDate() + 7);
+      return d.toISOString().slice(0, 10);
+    }
+  }
+  return null;
+}
+
 function PantryView({ data }) {
   const [name, setName] = useState('');
   const [qty, setQty] = useState('');
@@ -3145,7 +3307,17 @@ function PantryView({ data }) {
       {/* Add form */}
       <div style={{ background: '#fff', border: '1px solid #E8DDC9', borderRadius: 8, padding: 14, marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          <input value={name} onChange={e => setName(e.target.value)} onKeyDown={e => e.key === 'Enter' && submit()}
+          <input value={name} onChange={e => {
+            setName(e.target.value);
+            // Auto-suggest expiry date for perishable items
+            const suggested = getPerishableExpiry(e.target.value);
+            if (suggested && !expiresOn) {
+              setExpiresOn(suggested);
+              setShowExpiry(true);
+            } else if (!suggested && !expiresOn) {
+              setShowExpiry(false);
+            }
+          }} onKeyDown={e => e.key === 'Enter' && submit()}
             placeholder="Ingredient" style={{
               flex: '2 1 180px', padding: '8px 12px', border: '1px solid #E8DDC9',
               borderRadius: 6, fontSize: 14, outline: 'none'
@@ -3173,8 +3345,13 @@ function PantryView({ data }) {
             {showExpiry ? '−' : '+'} Expiration date
           </button>
           {showExpiry && (
-            <input type="date" value={expiresOn} onChange={e => setExpiresOn(e.target.value)}
-              style={{ padding: '4px 8px', border: '1px solid #E8DDC9', borderRadius: 4, fontSize: 12 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input type="date" value={expiresOn} onChange={e => setExpiresOn(e.target.value)}
+                style={{ padding: '4px 8px', border: '1px solid #E8DDC9', borderRadius: 4, fontSize: 12 }} />
+              {getPerishableExpiry(name) && (
+                <span className='sans' style={{ fontSize: 10, color: '#A85C32' }}>auto-detected</span>
+              )}
+            </div>
           )}
         </div>
       </div>

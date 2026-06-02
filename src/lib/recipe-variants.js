@@ -90,8 +90,14 @@ export function resolveStepForIngredientMode(step, ingredientMode) {
 }
 
 // Full resolver — apply both equipment AND ingredient mode
+// IMPORTANT: step.userText is a user-applied swap that overrides ALL alts.
+// Equipment and ingredient alts only apply when the user hasn't made a custom swap.
 export function fullyResolveStep(step, equipmentMode, ingredientMode) {
   if (!step) return null;
+  // User swap takes absolute priority — overrides equipment and ingredient alts
+  if (step.userText) {
+    return { ...step, text: step.userText };
+  }
   // First apply ingredient mode (might change the text)
   let s = resolveStepForIngredientMode(step, ingredientMode);
   // Then apply equipment mode (might change the text again, e.g. for the cooking step)

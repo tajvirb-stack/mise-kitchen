@@ -636,7 +636,18 @@ export function WhatCanIMakeTonight({ data, setView, setActiveRecipeId }) {
       .sort((a, b) => b.matchPct - a.matchPct)
       .slice(0, 3);
 
-    return { items: scored, mealType: targetMealType };
+    // If pantry overlap gives nothing, fall back to fastest recipes of that meal type
+    let items = scored;
+    let fallback = false;
+    if (items.length === 0) {
+      fallback = true;
+      items = (data.recipes || [])
+        .filter(r => { const mt = r.mealType || r.meal_type; return !mt || mt === targetMealType; })
+        .sort((a, b) => (a.timeMin || 30) - (b.timeMin || 30))
+        .slice(0, 3)
+        .map(recipe => ({ recipe, matchPct: 0, matched: 0, total: (recipe.ingredients || []).length }));
+    }
+    return { items, mealType: targetMealType, fallback };
   }, [data.recipes, data.pantry]);
 
   if (suggestions.items.length === 0) return null;
@@ -659,7 +670,9 @@ export function WhatCanIMakeTonight({ data, setView, setActiveRecipeId }) {
             What can I make for {mealLabels[suggestions.mealType]}?
           </h3>
         </div>
-        <span style={{ fontSize: 10, color: '#A85C32', fontWeight: 500 }}>Based on pantry</span>
+        <span style={{ fontSize: 10, color: '#A85C32', fontWeight: 500 }}>
+            {suggestions.fallback ? 'Quickest recipes' : 'Based on pantry'}
+          </span>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -679,7 +692,7 @@ export function WhatCanIMakeTonight({ data, setView, setActiveRecipeId }) {
                 {recipe.title}
               </div>
               <div style={{ fontSize: 11, color: '#7A6450', marginTop: 3 }}>
-                {matched}/{total} ingredients on hand · {recipe.timeMin || 30} min
+                {suggestions.fallback ? `${recipe.timeMin || 30} min` : `${matched}/${total} ingredients on hand · ${recipe.timeMin || 30} min`}
               </div>
             </div>
             <ChevronRight size={16} color="#A85C32" />

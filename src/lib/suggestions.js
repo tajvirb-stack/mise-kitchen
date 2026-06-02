@@ -216,6 +216,243 @@ export const SUBSTITUTES = [
     substitutes: [
       { type: 'replace', text: 'Frozen peas or frozen lima beans', healthier: false }
     ]
+  },
+
+  // === Proteins ===
+  { matches: ['chicken breast', 'chicken thigh', 'boneless skinless chicken', 'ground chicken'], label: 'chicken',
+    substitutes: [
+      { type: 'replace', text: 'Turkey thighs or breast — same cook time, leaner', healthier: true },
+      { type: 'vegan', text: 'Extra-firm tofu pressed dry — marinate 30 min, same seasoning', healthier: true }
+    ]
+  },
+  { matches: ['salmon fillet', 'salmon'], label: 'salmon',
+    substitutes: [
+      { type: 'replace', text: 'Any firm white fish (cod, halibut, tilapia) — reduce cook time by 2 min', healthier: false },
+      { type: 'replace', text: 'Chicken breast pounded thin — same cook time', healthier: false }
+    ]
+  },
+  { matches: ['ground turkey'], label: 'ground turkey',
+    substitutes: [
+      { type: 'replace', text: 'Ground chicken — identical cook', healthier: false },
+      { type: 'replace', text: 'Ground beef (80/20) — richer flavour', healthier: false }
+    ]
+  },
+
+  // === Aromatics ===
+  { matches: ['garlic clove', 'garlic'], howToMake: '1 clove = 1 tsp garlic paste = ¼ tsp garlic powder.', label: 'fresh garlic',
+    substitutes: [
+      { type: 'replace', text: '1 tsp garlic paste (jarred) per clove — skip the mincing', healthier: false },
+      { type: 'replace', text: '¼ tsp garlic powder per clove — works in cooked dishes', healthier: false }
+    ]
+  },
+  { matches: ['fresh ginger', 'ginger root', 'ginger'], howToMake: '1 inch fresh = 1 tbsp ginger paste = ¼ tsp ground ginger.', label: 'fresh ginger',
+    substitutes: [
+      { type: 'replace', text: '1 tbsp ginger paste (Gourmet Garden) per 1-inch piece', healthier: false },
+      { type: 'replace', text: '¼ tsp ground ginger per 1-inch piece — less bright', healthier: false }
+    ]
+  },
+  { matches: ['ginger-garlic puree', 'ginger garlic paste'], howToMake: '2 tbsp puree = 2 tbsp jarred ginger-garlic paste (exact 1:1).', label: 'ginger-garlic puree',
+    substitutes: [
+      { type: 'replace', text: '2 tbsp jarred ginger-garlic paste — exact 1:1 replacement', healthier: false },
+      { type: 'replace', text: '1 tbsp ginger paste + 1 tbsp garlic paste mixed', healthier: false }
+    ]
+  },
+  { matches: ['shallot'], label: 'shallot',
+    substitutes: [
+      { type: 'replace', text: 'Half a small white or red onion — use ½ the amount', healthier: false }
+    ]
+  },
+  { matches: ['yellow onion', 'white onion', 'red onion'], label: 'onion',
+    substitutes: [
+      { type: 'replace', text: 'Any onion colour — red/yellow/white are interchangeable here', healthier: false },
+      { type: 'replace', text: 'Leek (white and light green part) — milder and sweeter', healthier: false }
+    ]
+  },
+
+  // === Grains ===
+  { matches: ['jasmine rice', 'basmati rice', 'white rice', 'parboiled rice', 'long-grain'], label: 'white rice',
+    substitutes: [
+      { type: 'healthier', text: 'Brown rice — add 10-15 min to cook time (or use quick-cook)', healthier: true },
+      { type: 'replace', text: 'Quinoa — same water ratio, 15 min cook, extra protein', healthier: true },
+      { type: 'healthier', text: 'Cauliflower rice — heat in pan 5 min, no carbs', healthier: true }
+    ]
+  },
+  { matches: ['bulgur wheat', 'bulgur'], label: 'bulgur',
+    substitutes: [
+      { type: 'replace', text: 'Quinoa — same prep (pour boiling water, cover 15 min)', healthier: false },
+      { type: 'replace', text: 'Pearl couscous — faster (boiling water, cover 5 min)', healthier: false }
+    ]
+  },
+  { matches: ['pearl couscous', 'israeli couscous'], label: 'pearl couscous',
+    substitutes: [
+      { type: 'replace', text: 'Orzo pasta — same shape, cook in boiling salted water 8 min', healthier: false }
+    ]
+  },
+  { matches: ['orzo'], label: 'orzo',
+    substitutes: [
+      { type: 'replace', text: 'Any small pasta shape (ditalini, small shells)', healthier: false }
+    ]
+  },
+  { matches: ['linguine', 'spaghetti'], label: 'long pasta',
+    substitutes: [
+      { type: 'replace', text: 'Any long pasta shape — fettuccine, bucatini, spaghetti', healthier: false },
+      { type: 'healthier', text: 'Zucchini noodles spiralized — toss with hot sauce, no cook needed', healthier: true }
+    ]
+  },
+
+  // === Vegetables ===
+  { matches: ['bell pepper', 'sweet bell pepper', 'red bell pepper', 'green bell pepper'], label: 'bell pepper',
+    substitutes: [
+      { type: 'replace', text: 'Any bell pepper colour — flavour varies slightly but all work', healthier: false }
+    ]
+  },
+  { matches: ['zucchini'], label: 'zucchini',
+    substitutes: [
+      { type: 'replace', text: 'Yellow summer squash — identical cook', healthier: false },
+      { type: 'replace', text: 'Eggplant same size — 2 min extra cook time', healthier: false }
+    ]
+  },
+  { matches: ['broccoli'], label: 'broccoli',
+    substitutes: [
+      { type: 'replace', text: 'Cauliflower florets — same roast time', healthier: false },
+      { type: 'replace', text: 'Green beans — 2-3 min less roast time needed', healthier: false }
+    ]
+  },
+  { matches: ['baby spinach', 'spinach'], label: 'spinach',
+    substitutes: [
+      { type: 'replace', text: 'Baby kale — slightly chewier, wilts the same', healthier: false }
+    ]
+  },
+  { matches: ['bok choy', 'shanghai bok choy'], label: 'bok choy',
+    substitutes: [
+      { type: 'replace', text: 'Napa cabbage — works the same in stir-fries', healthier: false }
+    ]
+  },
+  { matches: ['carrot'], label: 'carrot',
+    substitutes: [
+      { type: 'replace', text: 'Parsnip — sweeter but same texture when cooked', healthier: false },
+      { type: 'replace', text: 'Skip it — carrots are usually just texture and colour', healthier: false }
+    ]
+  },
+  { matches: ['green cabbage', 'red cabbage', 'coleslaw mix', 'pre-shredded coleslaw'], label: 'cabbage',
+    substitutes: [
+      { type: 'replace', text: 'Pre-shredded coleslaw bag from produce — saves 5 min', healthier: false },
+      { type: 'replace', text: 'Napa cabbage — more tender, less cooking needed', healthier: false }
+    ]
+  },
+  { matches: ['russet potato', 'yellow potato', 'yukon gold'], label: 'potato',
+    substitutes: [
+      { type: 'replace', text: 'Sweet potato — 5 min less roast time, more fibre', healthier: true },
+      { type: 'replace', text: 'Any potato variety — roast times are identical', healthier: false }
+    ]
+  },
+  { matches: ['snow peas', 'sugar snap peas'], label: 'snow peas',
+    substitutes: [
+      { type: 'replace', text: 'Snap peas and snow peas are interchangeable', healthier: false }
+    ]
+  },
+  { matches: ['chickpea', 'can chickpeas', 'canned chickpeas'], label: 'chickpeas',
+    substitutes: [
+      { type: 'replace', text: 'Canned white beans (cannellini) — same texture', healthier: false },
+      { type: 'replace', text: 'Canned lentils — slightly softer, works in stews', healthier: true }
+    ]
+  },
+
+  // === Dairy / Fats ===
+  { matches: ['greek yogurt', 'plain greek yogurt', 'full fat greek yogurt'], label: 'Greek yogurt',
+    substitutes: [
+      { type: 'replace', text: 'Full-fat sour cream — same texture and tang', healthier: false },
+      { type: 'vegan', text: 'Plain coconut yogurt — same use in sauces', healthier: false }
+    ]
+  },
+  { matches: ['olive oil'], label: 'olive oil',
+    substitutes: [
+      { type: 'replace', text: 'Any neutral oil (canola, avocado, vegetable) — identical for cooking', healthier: false }
+    ]
+  },
+  { matches: ['butter'], label: 'butter',
+    substitutes: [
+      { type: 'replace', text: 'Olive oil — use ¾ the amount called for', healthier: false },
+      { type: 'vegan', text: 'Vegan butter (same amount)', healthier: false }
+    ]
+  },
+
+  // === Condiments / Pantry ===
+  { matches: ['garlic salt'], howToMake: '1 tsp garlic salt = ¾ tsp coarse salt + ¼ tsp garlic powder.', label: 'garlic salt',
+    substitutes: [
+      { type: 'replace', text: '¾ tsp coarse salt + ¼ tsp garlic powder per 1 tsp garlic salt', healthier: false }
+    ]
+  },
+  { matches: ['tomato paste'], label: 'tomato paste',
+    substitutes: [
+      { type: 'replace', text: '3 tbsp tomato sauce reduced = 1 tbsp paste', healthier: false },
+      { type: 'replace', text: 'Sun-dried tomato paste in a tube — more intense flavour', healthier: false }
+    ]
+  },
+  { matches: ['sesame oil', 'toasted sesame oil'], label: 'sesame oil',
+    substitutes: [
+      { type: 'replace', text: 'Skip it — sesame oil adds flavour but is not structural to the dish', healthier: false }
+    ]
+  },
+  { matches: ['honey'], label: 'honey',
+    substitutes: [
+      { type: 'replace', text: 'Maple syrup — 1:1, slightly different but works in glazes', healthier: false },
+      { type: 'replace', text: 'Brown sugar + splash of water to make it syrupy', healthier: false }
+    ]
+  },
+  { matches: ['spicy mayo', 'kewpie'], howToMake: '2 tbsp mayo + 1 tsp sriracha + ½ tsp lime juice.', label: 'spicy mayo',
+    substitutes: [
+      { type: 'replace', text: 'Regular mayo + sriracha to taste + squeeze of lime', healthier: false },
+      { type: 'healthier', text: 'Greek yogurt + sriracha + lime juice — much lighter', healthier: true }
+    ]
+  },
+  { matches: ['basil pesto'], label: 'basil pesto',
+    substitutes: [
+      { type: 'replace', text: 'Any jarred pesto variety (sun-dried tomato, etc.)', healthier: false }
+    ]
+  },
+  { matches: ['ranch dressing'], label: 'ranch dressing',
+    substitutes: [
+      { type: 'healthier', text: 'Greek yogurt + dried dill + garlic powder + lemon juice + salt', healthier: true }
+    ]
+  },
+  { matches: ['piri piri', 'piri-piri'], label: 'piri piri sauce',
+    substitutes: [
+      { type: 'replace', text: '1 tbsp sriracha + 1 tbsp red wine vinegar + ½ tsp smoked paprika', healthier: false }
+    ]
+  },
+  { matches: ['tikka sauce', 'tikka masala sauce'], howToMake: 'Mix: ¼ cup tomato paste + ¼ cup cream + 1 tsp garam masala + ¼ tsp salt, simmer 2 min.', label: 'tikka sauce',
+    substitutes: [
+      { type: 'replace', text: '¼ cup tomato paste + ¼ cup heavy cream + 1 tsp garam masala', healthier: false },
+      { type: 'replace', text: 'Any jarred butter chicken or tikka masala sauce', healthier: false }
+    ]
+  },
+  { matches: ['nuoc cham'], howToMake: 'Mix: 3 tbsp fish sauce + 3 tbsp water + 2 tbsp lime juice + 2 tbsp sugar + 1 garlic clove grated.', label: 'nuoc cham',
+    substitutes: [
+      { type: 'replace', text: 'Mix: fish sauce + lime juice + sugar + garlic + water (3:2:2:1:3)', healthier: false }
+    ]
+  },
+
+  // === Fresh herbs ===
+  { matches: ['fresh cilantro', 'cilantro'], label: 'fresh cilantro',
+    substitutes: [
+      { type: 'replace', text: 'Fresh flat-leaf parsley — adds freshness without cilantro flavour', healthier: false },
+      { type: 'replace', text: 'Skip it — cilantro is garnish in most of these recipes', healthier: false }
+    ]
+  },
+  { matches: ['fresh parsley', 'parsley'], label: 'fresh parsley',
+    substitutes: [
+      { type: 'replace', text: 'Fresh cilantro — same role as a fresh herb garnish', healthier: false },
+      { type: 'replace', text: 'Skip it or use ½ tsp dried parsley', healthier: false }
+    ]
+  },
+
+  // === Bread / Wraps ===
+  { matches: ['naan', 'flatbread', 'naan-style'], label: 'naan',
+    substitutes: [
+      { type: 'replace', text: 'Pita bread — slightly thinner, crisps faster (check at 5 min)', healthier: false },
+      { type: 'replace', text: 'Flour tortilla — very thin, will crisp in 3-4 min', healthier: false }
+    ]
   }
 ];
 

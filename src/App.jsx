@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 
 export default function App() {
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth();
-  const { household, members, loading: hhLoading, error: hhError, createHousehold, joinHousehold } = useHousehold(user);
+  const { household, members, loading: hhLoading, error: hhError, createHousehold, joinHousehold, updateHouseholdName } = useHousehold(user);
   const data = useHouseholdData(household);
 
   // Equipment + ingredient mode — persisted across sessions via localStorage.
@@ -77,6 +77,7 @@ export default function App() {
       prepTasks={prepTasks}
       modes={modes}
       onSignOut={signOut}
+      updateHouseholdName={updateHouseholdName}
     />
   );
 }

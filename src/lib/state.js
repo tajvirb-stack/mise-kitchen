@@ -133,7 +133,17 @@ export function useHousehold(user) {
     return { id: householdId };
   };
 
-  return { household, members, loading, error, createHousehold, joinHousehold, reload: loadHousehold };
+  const updateHouseholdName = async (newName) => {
+    if (!household || !newName.trim()) return;
+    const { error } = await supabase
+      .from('households')
+      .update({ name: newName.trim() })
+      .eq('id', household.id);
+    if (!error) await loadHousehold();
+    return !error;
+  };
+
+  return { household, members, loading, error, createHousehold, joinHousehold, reload: loadHousehold, updateHouseholdName };
 }
 
 // Apply a realtime patch to a list of rows (no full refetch)
