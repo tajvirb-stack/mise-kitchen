@@ -1524,9 +1524,9 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
     setSwapping(true);
     try {
       const newIng = buildSwappedIngredient(ing, substituteText);
-      // Preserve _swappedFrom as the ORIGINAL name (before any swaps).
-      // If this ingredient was already swapped, keep the first original name.
-      const originalName = ing._swappedFrom || ing.name;
+      // Always look up the live ingredient from recipe to get _swappedFrom
+      const liveIng = recipe.ingredients.find(x => x.id === ing.id) || ing;
+      const originalName = liveIng._swappedFrom || liveIng.name || ing.name;
       const updatedIngredients = recipe.ingredients.map(i =>
         i.id === ing.id ? { ...i, name: newIng.name, _swappedFrom: originalName, _swappedTo: substituteText } : i
       );
@@ -1706,7 +1706,9 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
               // e.g. 'carrot, peeled' → 'carrot'
               // Use _swappedFrom (original name) if available so re-swapping
               // always looks up the original ingredient, not the current swapped name.
-              const nameToMatch = ing._swappedFrom || ing.name;
+              // Re-read from recipe.ingredients to get latest _swappedFrom after a swap.
+              const liveIngForMatch = recipe.ingredients.find(x => x.id === ing.id) || ing;
+              const nameToMatch = liveIngForMatch._swappedFrom || liveIngForMatch.name;
               const ingNameForMatch = nameToMatch
                 .replace(/\s*\([^)]*\)/g, '') // strip (parentheticals)
                 .replace(/,.*$/, '')             // strip ', peeled' etc
@@ -1740,7 +1742,11 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
                           </button>
                         )}
                         {subs && (
-                          <button onClick={() => setSwapModal({ ing, subs })} style={{
+                          <button onClick={() => {
+                          // Get fresh ingredient from recipe (has _swappedFrom if previously swapped)
+                          const freshIng = recipe.ingredients.find(x => x.id === ing.id) || ing;
+                          setSwapModal({ ing: freshIng, subs });
+                        }} style={{
                             marginLeft: 6, padding: '2px 8px', background: '#F0F5E8', color: '#5C7A3A',
                             border: '1px solid #C5D9A8', borderRadius: 12, fontSize: 11, fontWeight: 500,
                             display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'pointer'
@@ -1988,7 +1994,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
   const [timers, setTimers] = useState(() => {
     // Try to restore timers from sessionStorage (survives iOS remount on unlock)
     try {
-      const saved = sessionStorage.getItem(timerStorageKey);
+      const saved = localStorage.getItem(timerStorageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         // Validate: if any running timer has a deadline in the past, mark done
@@ -2020,15 +2026,11 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
 
   // Persist timers to sessionStorage so phone-lock remounts restore correctly
   React.useEffect(() => {
-    try { sessionStorage.setItem(timerStorageKey, JSON.stringify(timers)); } catch {}
+    try { localStorage.setItem(timerStorageKey, JSON.stringify(timers)); } catch {}
   }, [timers, timerStorageKey]);
 
-  // Clear timer storage when leaving cooking mode
-  React.useEffect(() => {
-    return () => {
-      try { sessionStorage.removeItem(timerStorageKey); } catch {}
-    };
-  }, [timerStorageKey]);
+  // Timer storage is cleaned up when the user finishes cooking (not on unmount)
+  // because iOS may unmount/remount on lock-screen without the user intending to stop
 
   const intervalRef = useRef(null);
   const fireAlarm = () => {
@@ -2370,6 +2372,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                 } catch (e) { console.error(e); }
                 setSavingDialog(false);
                 setShowCookedDialog(false);
+                try { localStorage.removeItem(timerStorageKey); } catch {}
                 setView('home');
               }}
               style={{
