@@ -1696,9 +1696,14 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
             {(recipe.ingredients || []).map(rawIng => {
               const ing = resolveIngredient(rawIng, ingMode);
               const decoder = findComponentRecipe(ing.name);
-              // Strip long parenthetical descriptions before matching
-              // e.g. 'ginger-garlic puree (made from...)' → 'ginger-garlic puree'
-              const ingNameForMatch = ing.name.replace(/\s*\([^)]*\)/g, '').trim();
+              // Strip parenthetical descriptions and trailing qualifiers before matching
+              // e.g. 'ginger-garlic puree (made from 1 inch...)' → 'ginger-garlic puree'
+              // e.g. 'carrot, peeled' → 'carrot'
+              const ingNameForMatch = ing.name
+                .replace(/\s*\([^)]*\)/g, '') // strip (parentheticals)
+                .replace(/,.*$/, '')             // strip ', peeled' etc
+                .replace(/\s+(fresh|dried|frozen|canned|jarred|toasted|shredded|chopped|sliced|diced|minced|grated|peeled|skin.on|bone.in)\b.*/i, '') // strip cooking adjectives
+                .trim();
               const subs = findSubstitutes(ingNameForMatch);
               const isOpen = openComponent === ing.id;
               const isSubOpen = openSubstitute === ing.id;
@@ -1955,17 +1960,26 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
 
   // Resolve all steps for current equipment/ingredient mode
   const allSteps = useMemo(() => {
-    return (recipe.steps || []).map(s => fullyResolveStep(s, eqMode, ingMode));
+    const resolved = (recipe.steps || []).map(s => fullyResolveStep(s, eqMode, ingMode));
+    // Sort by phase: prep first, then cook, then plate
+    // Within each phase, preserve original recipe order
+    const phaseOrder = { prep: 0, cook: 1, plate: 2 };
+    return [...resolved].sort((a, b) => {
+      const pa = phaseOrder[a.phase || 'cook'] ?? 1;
+      const pb = phaseOrder[b.phase || 'cook'] ?? 1;
+      return pa - pb;
+    });
   }, [recipe.steps, eqMode, ingMode]);
 
-  // Per-step timers: { [stepId]: { remaining, startedAt, running, done } }
-  // We store startedAt (epoch ms) instead of counting down, so that
-  // when the phone locks and JS is paused, the timer resumes correctly
-  // by computing elapsed = Date.now() - startedAt on wake.
+  // Per-step timers: { [stepId]: { initial, deadline, running, done } }
+  // 'deadline' is an absolute epoch-ms timestamp of when the timer will hit zero.
+  // remaining = Math.ceil((deadline - Date.now()) / 1000)
+  // This approach survives phone lock: when JS resumes, Date.now() reflects
+  // real wall-clock time so the remaining computation is always accurate.
   const [timers, setTimers] = useState(() => {
     const t = {};
     for (const s of (recipe.steps || [])) {
-      if (s.timerSec) t[s.id] = { remaining: s.timerSec, startedAt: null, running: false, done: false };
+      if (s.timerSec) t[s.id] = { initial: s.timerSec, deadline: null, remaining: s.timerSec, running: false, done: false };
     }
     return t;
   });
@@ -1973,68 +1987,68 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
   // Checked steps (completed)
   const [checked, setChecked] = useState(new Set());
 
-  // Global tick — recalculates all timers from their startedAt timestamp.
-  // This means phone-lock / tab-background doesn't lose time: when the app
-  // wakes up, the next tick computes the real elapsed time from Date.now().
   const intervalRef = useRef(null);
   const fireAlarm = () => {
     try { navigator.vibrate && navigator.vibrate([300, 100, 300, 100, 600]); } catch {}
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      [0, 0.35, 0.7].forEach(t => {
+      [0, 0.35, 0.7].forEach(delay => {
         const o = ctx.createOscillator(), g = ctx.createGain();
         o.connect(g); g.connect(ctx.destination);
         o.frequency.value = 880;
-        g.gain.setValueAtTime(0.3, ctx.currentTime + t);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.3);
-        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.35);
+        g.gain.setValueAtTime(0.3, ctx.currentTime + delay);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.3);
+        o.start(ctx.currentTime + delay); o.stop(ctx.currentTime + delay + 0.35);
       });
     } catch {}
   };
+
+  // Tick every second — recomputes remaining from deadline for each running timer.
+  // Using deadline (absolute timestamp) means phone-lock doesn't lose time:
+  // when JS resumes, Date.now() is accurate and remaining is always correct.
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       const now = Date.now();
       setTimers(prev => {
+        let anyRunning = false;
+        for (const t of Object.values(prev)) {
+          if (t.running && !t.done) { anyRunning = true; break; }
+        }
+        if (!anyRunning) return prev;
+
         const next = { ...prev };
-        let changed = false;
         for (const id of Object.keys(next)) {
           const t = next[id];
-          if (!t.running || t.done) continue;
-          // Compute remaining from real wall-clock time
-          const elapsed = t.startedAt ? Math.floor((now - t.startedAt) / 1000) : 0;
-          const remaining = Math.max(0, t.remaining - elapsed);
-          if (remaining !== (t.remaining - elapsed) || remaining === 0) {
-            if (remaining <= 0) {
-              next[id] = { ...t, remaining: 0, running: false, done: true };
-              fireAlarm();
-            } else {
-              next[id] = { ...t, remaining };
-            }
-            changed = true;
+          if (!t.running || t.done || !t.deadline) continue;
+          const remaining = Math.max(0, Math.ceil((t.deadline - now) / 1000));
+          if (remaining <= 0) {
+            next[id] = { ...t, remaining: 0, running: false, done: true };
+            setTimeout(fireAlarm, 0); // outside setState
+          } else {
+            next[id] = { ...t, remaining };
           }
         }
-        return changed ? next : prev;
+        return next;
       });
-    }, 500); // 500ms tick for responsiveness without battery drain
+    }, 1000);
     return () => clearInterval(intervalRef.current);
   }, []);
 
   const toggleTimer = (stepId, timerSec) => {
     setTimers(prev => {
-      const t = prev[stepId] || { remaining: timerSec, startedAt: null, running: false, done: false };
+      const t = prev[stepId] || { initial: timerSec, deadline: null, remaining: timerSec, running: false, done: false };
       if (t.done) {
         // Reset to full duration
-        return { ...prev, [stepId]: { remaining: timerSec, startedAt: null, running: false, done: false } };
+        return { ...prev, [stepId]: { initial: timerSec, deadline: null, remaining: timerSec, running: false, done: false } };
       }
       if (t.running) {
-        // Pause: freeze remaining at current value, clear startedAt
-        const now = Date.now();
-        const elapsed = t.startedAt ? Math.floor((now - t.startedAt) / 1000) : 0;
-        const remaining = Math.max(0, t.remaining - elapsed);
-        return { ...prev, [stepId]: { ...t, remaining, startedAt: null, running: false } };
+        // Pause: freeze current remaining, clear deadline
+        const remaining = t.deadline ? Math.max(0, Math.ceil((t.deadline - Date.now()) / 1000)) : t.remaining;
+        return { ...prev, [stepId]: { ...t, remaining, deadline: null, running: false } };
       } else {
-        // Start/resume: record start time relative to current remaining
-        return { ...prev, [stepId]: { ...t, startedAt: Date.now(), running: true } };
+        // Start/resume: set deadline = now + remaining seconds
+        const deadline = Date.now() + (t.remaining * 1000);
+        return { ...prev, [stepId]: { ...t, deadline, running: true } };
       }
     });
   };
@@ -2079,17 +2093,36 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
         <div style={{ height: '100%', background: '#5C7A3A', width: `${totalSteps > 0 ? (totalChecked / totalSteps) * 100 : 0}%`, transition: 'width 0.4s' }} />
       </div>
 
-      {/* All steps */}
+      {/* All steps — grouped by phase with divider labels */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {allSteps.map((step, idx) => {
+          const prevPhase = idx > 0 ? (allSteps[idx - 1].phase || 'cook') : null;
+          const thisPhase = step.phase || 'cook';
+          const showPhaseHeader = thisPhase !== prevPhase;
+          const phaseLabel = { prep: '🥣 Prep', cook: '🔥 Cook', plate: '🍽️ Plate & serve' }[thisPhase] || thisPhase;
           const phase = phaseConfig[step.phase || 'cook'] || phaseConfig.cook;
           const timer = timers[step.id];
           const isChecked = checked.has(step.id);
           const bullets = splitStepIntoBullets(step.text);
-          const pct = timer && step.timerSec > 0 ? ((step.timerSec - (timer.running && timer.startedAt ? Math.max(0, timer.remaining - Math.floor((Date.now() - timer.startedAt) / 1000)) : timer.remaining)) / step.timerSec) * 100 : 0;
+          const pct = timer && step.timerSec > 0 ? ((step.timerSec - timer.remaining) / step.timerSec) * 100 : 0;
 
           return (
-            <div key={step.id} style={{
+            <React.Fragment key={step.id}>
+            {showPhaseHeader && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '8px 0 4px',
+                marginTop: idx === 0 ? 0 : 8
+              }}>
+                <div style={{ flex: 1, height: 1, background: '#E8DDC9' }} />
+                <span className="sans" style={{
+                  fontSize: 11, fontWeight: 700, color: phase.color,
+                  letterSpacing: '0.12em', textTransform: 'uppercase'
+                }}>{phaseLabel}</span>
+                <div style={{ flex: 1, height: 1, background: '#E8DDC9' }} />
+              </div>
+            )}
+            <div style={{
               background: '#fff',
               border: `1px solid ${isChecked ? '#C5D9A8' : phase.border}`,
               borderLeft: `4px solid ${isChecked ? '#5C7A3A' : phase.color}`,
@@ -2130,10 +2163,10 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                   <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                     <div className="serif" style={{
                       fontSize: 20, fontVariantNumeric: 'tabular-nums', fontWeight: 600,
-                      color: timer.done ? '#5C7A3A' : (timer.running && timer.startedAt ? Math.max(0, timer.remaining - Math.floor((Date.now() - timer.startedAt) / 1000)) : timer.remaining) < 60 && timer.running ? '#A85C32' : '#2A1F1A',
+                      color: timer.done ? '#5C7A3A' : timer.remaining < 60 && timer.running ? '#A85C32' : '#2A1F1A',
                       minWidth: 46, textAlign: 'right'
                     }}>
-                      {timer.done ? '✓' : fmt(timer.running && timer.startedAt ? Math.max(0, timer.remaining - Math.floor((Date.now() - timer.startedAt) / 1000)) : timer.remaining)}
+                      {timer.done ? '✓' : fmt(timer.remaining)}
                     </div>
                     <button
                       onClick={() => toggleTimer(step.id, step.timerSec)}
@@ -2182,6 +2215,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                 })}
               </div>
             </div>
+            </React.Fragment>
           );
         })}
       </div>
