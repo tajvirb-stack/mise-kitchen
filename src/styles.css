@@ -39,3 +39,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
   outline: 2px solid #A85C32;
   outline-offset: 2px;
 }
+
+/* Mobile overflow prevention */
+* { box-sizing: border-box; }
+body { overflow-x: hidden; }
+img, svg { max-width: 100%; }
+
+/* iOS Safari safe area support */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* Smooth scrolling */
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+/* Prevent tap highlight on buttons */
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }

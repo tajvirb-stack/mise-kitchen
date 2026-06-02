@@ -121,7 +121,7 @@ export default function Kitchen({ user, household, members, data, weeklyIngredie
     <div style={{ minHeight: '100vh', background: '#FAF6EF' }}>
       {!isMobile && <Sidebar view={view} setView={(v) => { setView(v); }} weekCount={weekCount} groceryCount={groceryCount} onSettings={() => setShowSettings(true)} household={household} />}
 
-      <main style={{ marginLeft: isMobile ? 0 : 240, padding: isMobile ? '20px 16px 88px' : '32px 48px', maxWidth: 1280 }}>
+      <main style={{ marginLeft: isMobile ? 0 : 240, padding: isMobile ? '16px 14px 96px' : '32px 48px', maxWidth: 1280, overflowX: 'hidden', boxSizing: 'border-box' }}>
         {view === 'home' && <HomeView data={data} groceryList={groceryList} setView={setView} setActiveRecipeId={setActiveRecipeId} />}
         {view === 'recipes' && <RecipesView data={data} setView={setView} setActiveRecipeId={setActiveRecipeId} />}
         {view === 'recipe' && activeRecipe && <RecipeView recipe={activeRecipe} data={data} setView={setView} setCookingStepIdx={setCookingStepIdx} setCookingScale={setCookingScale} modes={modesWithAFType} />}
@@ -987,7 +987,7 @@ function StatTile({ label, value, accent, onClick }) {
       borderRadius: 8, textAlign: 'left'
     }}>
       <div className="sans" style={{ fontSize: 10, color: '#8B6F47', letterSpacing: '0.12em', textTransform: 'uppercase' }}>{label}</div>
-      <div className="serif" style={{ fontSize: 32, fontWeight: 500, color: accent, lineHeight: 1, marginTop: 6 }}>{value}</div>
+      <div className="serif" style={{ fontSize: 'clamp(22px, 5vw, 32px)', fontWeight: 500, color: accent, lineHeight: 1, marginTop: 6 }}>{value}</div>
     </button>
   );
 }
@@ -1355,7 +1355,7 @@ function RecipesView({ data, setView, setActiveRecipeId }) {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))', gap: 10 }}>
         {recipesWithBadges.map(r => (
           <article key={r.id} style={{
             background: '#fff', border: '1px solid #E8DDC9', borderRadius: 10, overflow: 'hidden', position: 'relative'
@@ -1464,7 +1464,7 @@ function PageHeader({ kicker, title, subtitle, back }) {
     <div style={{ marginBottom: 24 }}>
       {back && <button onClick={back} style={{ background: 'transparent', border: 'none', color: '#8B6F47', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, padding: 0, marginBottom: 10 }}><ArrowLeft size={14} />Back</button>}
       {kicker && <div className="sans" style={{ fontSize: 11, color: '#8B6F47', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 6 }}>{kicker}</div>}
-      <h1 className="serif" style={{ fontSize: 32, fontWeight: 400, margin: '0 0 6px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>{title}</h1>
+      <h1 className="serif" style={{ fontSize: 'clamp(20px, 5.5vw, 32px)', fontWeight: 400, margin: '0 0 6px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>{title}</h1>
       {subtitle && <p className="sans" style={{ fontSize: 14, color: '#5C4A3A', margin: 0 }}>{subtitle}</p>}
     </div>
   );
@@ -1564,10 +1564,10 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
     <div className="fade-in">
       <PageHeader back={() => setView('recipes')} kicker={(recipe.tags || []).join(' · ') || 'Recipe'} title={recipe.title} subtitle={recipe.description} />
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
         <button onClick={startCooking} style={{
-          padding: '14px 24px', background: '#A85C32', color: '#FAF6EF', border: 'none', borderRadius: 8,
-          fontSize: 16, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8
+          flex: '1 1 auto', padding: '14px 20px', background: '#A85C32', color: '#FAF6EF', border: 'none', borderRadius: 8,
+          fontSize: 15, fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
         }}>
           <ChefHat size={18} />
           Start cooking
@@ -1591,8 +1591,8 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
       {(supportedEquipment.length > 1 || hasIngAlts) && modes && (
         <div style={{
           background: '#fff', border: '1px solid #E8DDC9', borderRadius: 10,
-          padding: '12px 14px', marginBottom: 20,
-          display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap'
+          padding: '10px 12px', marginBottom: 16,
+          display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap'
         }}>
           {supportedEquipment.length > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1615,21 +1615,7 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
                   );
                 })}
               </div>
-              {/* Air fryer sub-type — shown when air fryer mode is active */}
-              {eqMode === 'airFryer' && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
-                  <span style={{ fontSize: 10, color: '#8B6F47', letterSpacing: '0.08em', textTransform: 'uppercase' }}>My air fryer</span>
-                  {[{id:'convection',label:'🌪️ Convection (e.g. Cuisinart)'},{id:'basket',label:'🪣 Basket'}].map(t => (
-                    <button key={t.id} onClick={() => modes?.setAirFryerType && modes.setAirFryerType(t.id)} style={{
-                      padding: '4px 10px', borderRadius: 12, border: '1px solid',
-                      borderColor: (modes?.airFryerType || 'convection') === t.id ? '#2A1F1A' : '#E8DDC9',
-                      background: (modes?.airFryerType || 'convection') === t.id ? '#2A1F1A' : 'transparent',
-                      color: (modes?.airFryerType || 'convection') === t.id ? '#FAF6EF' : '#5C4A3A',
-                      fontSize: 11, cursor: 'pointer'
-                    }}>{t.label}</button>
-                  ))}
-                </div>
-              )}
+
             </div>
           )}
 
@@ -1665,7 +1651,7 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
             <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Users size={15} />
               <button onClick={() => setScale(Math.max(0.5, scale - 0.5))} style={qtyBtn}><Minus size={12} /></button>
-              <span style={{ fontWeight: 500, minWidth: 90, textAlign: 'center' }}>{scaledServings} servings</span>
+              <span style={{ fontWeight: 500, minWidth: 70, textAlign: 'center', flexShrink: 0 }}>{scaledServings} servings</span>
               <button onClick={() => setScale(scale + 0.5)} style={qtyBtn}><Plus size={12} /></button>
             </span>
           </div>
@@ -1710,13 +1696,16 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
             {(recipe.ingredients || []).map(rawIng => {
               const ing = resolveIngredient(rawIng, ingMode);
               const decoder = findComponentRecipe(ing.name);
-              const subs = findSubstitutes(ing.name);
+              // Strip long parenthetical descriptions before matching
+              // e.g. 'ginger-garlic puree (made from...)' → 'ginger-garlic puree'
+              const ingNameForMatch = ing.name.replace(/\s*\([^)]*\)/g, '').trim();
+              const subs = findSubstitutes(ingNameForMatch);
               const isOpen = openComponent === ing.id;
               const isSubOpen = openSubstitute === ing.id;
               return (
                 <li key={ing.id} className="sans" style={{ fontSize: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontWeight: 500, minWidth: 80, color: ing.protein ? '#A85C32' : '#2A1F1A' }}>
+                    <span style={{ fontWeight: 500, minWidth: 60, flexShrink: 0, color: ing.protein ? '#A85C32' : '#2A1F1A' }}>
                       {formatQty(ing.qty * scale)} {ing.unit !== 'unit' && ing.unit !== 'whole' ? ing.unit : ''}
                     </span>
                     {editing ? (
@@ -1866,7 +1855,7 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
           padding: 16, zIndex: 500
         }}>
           <div onClick={e => e.stopPropagation()} style={{
-            background: '#FAF6EF', borderRadius: 14, padding: 24,
+            background: '#FAF6EF', borderRadius: 14, padding: '20px 16px',
             maxWidth: 480, width: '100%', maxHeight: '85vh', overflowY: 'auto'
           }}>
             <div style={{ marginBottom: 16 }}>
@@ -1969,11 +1958,14 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
     return (recipe.steps || []).map(s => fullyResolveStep(s, eqMode, ingMode));
   }, [recipe.steps, eqMode, ingMode]);
 
-  // Per-step timers: { [stepId]: { sec, running, done } }
+  // Per-step timers: { [stepId]: { remaining, startedAt, running, done } }
+  // We store startedAt (epoch ms) instead of counting down, so that
+  // when the phone locks and JS is paused, the timer resumes correctly
+  // by computing elapsed = Date.now() - startedAt on wake.
   const [timers, setTimers] = useState(() => {
     const t = {};
     for (const s of (recipe.steps || [])) {
-      if (s.timerSec) t[s.id] = { sec: s.timerSec, running: false, done: false };
+      if (s.timerSec) t[s.id] = { remaining: s.timerSec, startedAt: null, running: false, done: false };
     }
     return t;
   });
@@ -1981,49 +1973,69 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
   // Checked steps (completed)
   const [checked, setChecked] = useState(new Set());
 
-  // Global tick — runs ALL timers simultaneously
+  // Global tick — recalculates all timers from their startedAt timestamp.
+  // This means phone-lock / tab-background doesn't lose time: when the app
+  // wakes up, the next tick computes the real elapsed time from Date.now().
   const intervalRef = useRef(null);
+  const fireAlarm = () => {
+    try { navigator.vibrate && navigator.vibrate([300, 100, 300, 100, 600]); } catch {}
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.35, 0.7].forEach(t => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = 880;
+        g.gain.setValueAtTime(0.3, ctx.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.3);
+        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.35);
+      });
+    } catch {}
+  };
   useEffect(() => {
     intervalRef.current = setInterval(() => {
+      const now = Date.now();
       setTimers(prev => {
         const next = { ...prev };
         let changed = false;
         for (const id of Object.keys(next)) {
-          if (next[id].running && next[id].sec > 0) {
-            next[id] = { ...next[id], sec: next[id].sec - 1 };
-            changed = true;
-            if (next[id].sec === 0) {
-              next[id] = { ...next[id], running: false, done: true };
-              try { navigator.vibrate && navigator.vibrate([300, 100, 300, 100, 600]); } catch {}
-              // Beep
-              try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                [0, 0.35, 0.7].forEach(t => {
-                  const o = ctx.createOscillator(), g = ctx.createGain();
-                  o.connect(g); g.connect(ctx.destination);
-                  o.frequency.value = 880;
-                  g.gain.setValueAtTime(0.3, ctx.currentTime + t);
-                  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.3);
-                  o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.35);
-                });
-              } catch {}
+          const t = next[id];
+          if (!t.running || t.done) continue;
+          // Compute remaining from real wall-clock time
+          const elapsed = t.startedAt ? Math.floor((now - t.startedAt) / 1000) : 0;
+          const remaining = Math.max(0, t.remaining - elapsed);
+          if (remaining !== (t.remaining - elapsed) || remaining === 0) {
+            if (remaining <= 0) {
+              next[id] = { ...t, remaining: 0, running: false, done: true };
+              fireAlarm();
+            } else {
+              next[id] = { ...t, remaining };
             }
+            changed = true;
           }
         }
         return changed ? next : prev;
       });
-    }, 1000);
+    }, 500); // 500ms tick for responsiveness without battery drain
     return () => clearInterval(intervalRef.current);
   }, []);
 
   const toggleTimer = (stepId, timerSec) => {
     setTimers(prev => {
-      const t = prev[stepId] || { sec: timerSec, running: false, done: false };
+      const t = prev[stepId] || { remaining: timerSec, startedAt: null, running: false, done: false };
       if (t.done) {
-        // Reset
-        return { ...prev, [stepId]: { sec: timerSec, running: false, done: false } };
+        // Reset to full duration
+        return { ...prev, [stepId]: { remaining: timerSec, startedAt: null, running: false, done: false } };
       }
-      return { ...prev, [stepId]: { ...t, running: !t.running } };
+      if (t.running) {
+        // Pause: freeze remaining at current value, clear startedAt
+        const now = Date.now();
+        const elapsed = t.startedAt ? Math.floor((now - t.startedAt) / 1000) : 0;
+        const remaining = Math.max(0, t.remaining - elapsed);
+        return { ...prev, [stepId]: { ...t, remaining, startedAt: null, running: false } };
+      } else {
+        // Start/resume: record start time relative to current remaining
+        return { ...prev, [stepId]: { ...t, startedAt: Date.now(), running: true } };
+      }
     });
   };
 
@@ -2038,8 +2050,6 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
     plate: { label: 'Plate', color: '#7A5C32', bg: '#FAF1DC', border: '#E8D5AA' }
   };
 
-  // Active timers — for the sticky bar
-  const activeTimers = allSteps.filter(s => timers[s.id]?.running);
   const totalChecked = checked.size;
   const totalSteps = allSteps.length;
 
@@ -2048,7 +2058,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
   const savedMin = cookPlan.hasParallelism ? Math.round(cookPlan.savedMinutes) : 0;
 
   return (
-    <div className="fade-in" style={{ paddingBottom: activeTimers.length > 0 ? 100 : 24 }}>
+    <div className="fade-in">
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <button onClick={() => setView('recipe')} style={{
@@ -2076,7 +2086,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
           const timer = timers[step.id];
           const isChecked = checked.has(step.id);
           const bullets = splitStepIntoBullets(step.text);
-          const pct = timer && step.timerSec > 0 ? ((step.timerSec - timer.sec) / step.timerSec) * 100 : 0;
+          const pct = timer && step.timerSec > 0 ? ((step.timerSec - (timer.running && timer.startedAt ? Math.max(0, timer.remaining - Math.floor((Date.now() - timer.startedAt) / 1000)) : timer.remaining)) / step.timerSec) * 100 : 0;
 
           return (
             <div key={step.id} style={{
@@ -2120,10 +2130,10 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
                   <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                     <div className="serif" style={{
                       fontSize: 20, fontVariantNumeric: 'tabular-nums', fontWeight: 600,
-                      color: timer.done ? '#5C7A3A' : timer.sec < 60 && timer.running ? '#A85C32' : '#2A1F1A',
-                      minWidth: 52, textAlign: 'right'
+                      color: timer.done ? '#5C7A3A' : (timer.running && timer.startedAt ? Math.max(0, timer.remaining - Math.floor((Date.now() - timer.startedAt) / 1000)) : timer.remaining) < 60 && timer.running ? '#A85C32' : '#2A1F1A',
+                      minWidth: 46, textAlign: 'right'
                     }}>
-                      {timer.done ? '✓' : fmt(timer.sec)}
+                      {timer.done ? '✓' : fmt(timer.running && timer.startedAt ? Math.max(0, timer.remaining - Math.floor((Date.now() - timer.startedAt) / 1000)) : timer.remaining)}
                     </div>
                     <button
                       onClick={() => toggleTimer(step.id, step.timerSec)}
@@ -2153,7 +2163,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
               )}
 
               {/* Step text — bulleted */}
-              <div style={{ paddingLeft: 36, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ paddingLeft: 28, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {(bullets.length > 1 ? bullets : [step.text]).map((line, i) => {
                   const segs = highlightInStep(line);
                   return (
@@ -2191,35 +2201,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
         {totalChecked === totalSteps ? 'All done — log this meal!' : `Done cooking (${totalChecked}/${totalSteps} checked)`}
       </button>
 
-      {/* Sticky active timers bar */}
-      {activeTimers.length > 0 && (
-        <div style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0,
-          background: '#2A1F1A', color: '#FAF6EF',
-          padding: '10px 16px', zIndex: 300,
-          display: 'flex', gap: 12, alignItems: 'center', overflowX: 'auto'
-        }}>
-          <span className="sans" style={{ fontSize: 11, color: '#A89379', flexShrink: 0, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Running</span>
-          {activeTimers.map(s => {
-            const t = timers[s.id];
-            const phase = phaseConfig[s.phase || 'cook'] || phaseConfig.cook;
-            return (
-              <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
-                background: 'rgba(255,255,255,0.1)', borderRadius: 20, padding: '4px 12px' }}>
-                <span className="sans" style={{ fontSize: 11, color: '#F0E6D2', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {s.text.split('.')[0].slice(0, 30)}
-                </span>
-                <span className="serif" style={{ fontSize: 16, fontVariantNumeric: 'tabular-nums', color: t.sec < 60 ? '#F5C9B0' : '#FAF6EF', fontWeight: 600 }}>
-                  {fmt(t.sec)}
-                </span>
-                <button onClick={() => toggleTimer(s.id, s.timerSec)} style={{
-                  background: 'transparent', border: 'none', color: '#A89379', padding: 2, cursor: 'pointer'
-                }}><Pause size={12} /></button>
-              </div>
-            );
-          })}
-        </div>
-      )}
+
 
       {/* Cooked-it dialog */}
       {showCookedDialog && (
@@ -2437,7 +2419,7 @@ function WeekView({ data, setView, setActiveRecipeId }) {
           const slotOrder = ['breakfast', 'lunch', 'dinner'];
           const slotLabels = { breakfast: '🌅 Breakfast', lunch: '🥗 Lunch', dinner: '🍽️ Dinner' };
           return (
-            <div key={day} style={{ background: '#fff', border: '1px solid #E8DDC9', borderRadius: 10, padding: 14, minHeight: 200 }}>
+            <div key={day} style={{ background: '#fff', border: '1px solid #E8DDC9', borderRadius: 10, padding: 12 }}>
               <div className="serif" style={{ fontSize: 16, fontWeight: 500, marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #F0E6D2' }}>{day}</div>
               {slotOrder.map(slot => {
                 const slotPlans = dayPlans.filter(w => (w.meal_slot || 'dinner') === slot);
@@ -2800,7 +2782,7 @@ function GroceryView({ groceryList, data, household }) {
                         <div className="serif" style={{
                           fontSize: 20,
                           fontWeight: 500, color: '#A85C32',
-                          minWidth: 90, textAlign: 'right'
+                          minWidth: 65, textAlign: 'right'
                         }}>
                           {formatQty(item.need)} <span style={{ fontSize: 13, color: '#8B6F47' }}>{item.unit !== 'unit' ? item.unit : ''}</span>
                         </div>
