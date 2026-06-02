@@ -1524,10 +1524,15 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
     setSwapping(true);
     try {
       const newIng = buildSwappedIngredient(ing, substituteText);
+      // Preserve _swappedFrom as the ORIGINAL name (before any swaps).
+      // If this ingredient was already swapped, keep the first original name.
+      const originalName = ing._swappedFrom || ing.name;
       const updatedIngredients = recipe.ingredients.map(i =>
-        i.id === ing.id ? { ...i, name: newIng.name, _swappedFrom: ing.name, _swappedTo: substituteText } : i
+        i.id === ing.id ? { ...i, name: newIng.name, _swappedFrom: originalName, _swappedTo: substituteText } : i
       );
       // Rewrite any step that mentions the old ingredient name
+      // Rewrite steps: replace current displayed name (not original)
+      // because steps may already show a previously-swapped name
       const updatedSteps = recipe.steps.map(s => ({
         ...s,
         text: rewriteStepForSwap(s.text, ing.name, substituteText)
@@ -1699,7 +1704,10 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
               // Strip parenthetical descriptions and trailing qualifiers before matching
               // e.g. 'ginger-garlic puree (made from 1 inch...)' → 'ginger-garlic puree'
               // e.g. 'carrot, peeled' → 'carrot'
-              const ingNameForMatch = ing.name
+              // Use _swappedFrom (original name) if available so re-swapping
+              // always looks up the original ingredient, not the current swapped name.
+              const nameToMatch = ing._swappedFrom || ing.name;
+              const ingNameForMatch = nameToMatch
                 .replace(/\s*\([^)]*\)/g, '') // strip (parentheticals)
                 .replace(/,.*$/, '')             // strip ', peeled' etc
                 .replace(/\s+(fresh|dried|frozen|canned|jarred|toasted|shredded|chopped|sliced|diced|minced|grated|peeled|skin.on|bone.in)\b.*/i, '') // strip cooking adjectives
@@ -1866,7 +1874,7 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
             <div style={{ marginBottom: 16 }}>
               <div className="sans" style={{ fontSize: 11, color: '#5C7A3A', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 4 }}>Ingredient swap</div>
               <h2 className="serif" style={{ fontSize: 22, margin: '0 0 4px', color: '#2A1F1A' }}>
-                Swapping: {swapModal.ing.name}
+                Swapping: {swapModal.ing._swappedFrom || swapModal.ing.name}
               </h2>
               <p className="sans" style={{ fontSize: 13, color: '#5C4A3A', margin: 0, lineHeight: 1.5 }}>
                 Choose a substitute. The recipe will update — ingredient list and all step instructions.
@@ -1976,7 +1984,30 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
   // remaining = Math.ceil((deadline - Date.now()) / 1000)
   // This approach survives phone lock: when JS resumes, Date.now() reflects
   // real wall-clock time so the remaining computation is always accurate.
+  const timerStorageKey = `mise_timers_${recipe.id}`;
   const [timers, setTimers] = useState(() => {
+    // Try to restore timers from sessionStorage (survives iOS remount on unlock)
+    try {
+      const saved = sessionStorage.getItem(timerStorageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Validate: if any running timer has a deadline in the past, mark done
+        const now = Date.now();
+        for (const id of Object.keys(parsed)) {
+          const t = parsed[id];
+          if (t.running && t.deadline) {
+            const remaining = Math.max(0, Math.ceil((t.deadline - now) / 1000));
+            if (remaining <= 0) {
+              parsed[id] = { ...t, remaining: 0, running: false, done: true };
+            } else {
+              parsed[id] = { ...t, remaining };
+            }
+          }
+        }
+        return parsed;
+      }
+    } catch {}
+    // Fresh init
     const t = {};
     for (const s of (recipe.steps || [])) {
       if (s.timerSec) t[s.id] = { initial: s.timerSec, deadline: null, remaining: s.timerSec, running: false, done: false };
@@ -1986,6 +2017,18 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
 
   // Checked steps (completed)
   const [checked, setChecked] = useState(new Set());
+
+  // Persist timers to sessionStorage so phone-lock remounts restore correctly
+  React.useEffect(() => {
+    try { sessionStorage.setItem(timerStorageKey, JSON.stringify(timers)); } catch {}
+  }, [timers, timerStorageKey]);
+
+  // Clear timer storage when leaving cooking mode
+  React.useEffect(() => {
+    return () => {
+      try { sessionStorage.removeItem(timerStorageKey); } catch {}
+    };
+  }, [timerStorageKey]);
 
   const intervalRef = useRef(null);
   const fireAlarm = () => {
