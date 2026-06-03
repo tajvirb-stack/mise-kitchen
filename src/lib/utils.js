@@ -34,17 +34,93 @@ export function foldName(name) {
   return n;
 }
 
-export function formatQty(q) {
-  if (q === Math.floor(q)) return String(q);
-  const f = q - Math.floor(q);
-  const fracs = [[0.25,'¼'],[0.5,'½'],[0.75,'¾'],[0.333,'⅓'],[0.667,'⅔']];
-  for (const [v, sym] of fracs) {
-    if (Math.abs(f - v) < 0.05) {
-      const whole = Math.floor(q);
-      return whole > 0 ? `${whole}${sym}` : sym;
-    }
+// Kitchen-friendly quantity rounding.
+// Snaps scaled values to the nearest measurement a cook can actually use.
+// Rules:
+//   cups: snap to ⅛ cup increments (2 tbsp)
+//   tbsp: snap to ½ tbsp or whole
+//   tsp:  snap to ¼ tsp increments
+//   g:    round to nearest 5g (or 10g above 100g)
+//   ml:   round to nearest 5ml (or 25ml above 100ml)
+//   unit counts: round to nearest whole (you can't have 1.5 eggs, use 2)
+
+const FRAC_SYMBOLS = {
+  0.125: '⅛', 0.25: '¼', 0.333: '⅓', 0.375: '⅜',
+  0.5: '½', 0.625: '⅝', 0.667: '⅔', 0.75: '¾', 0.875: '⅞'
+};
+const FRAC_VALUES = Object.entries(FRAC_SYMBOLS).map(([v, s]) => [parseFloat(v), s]);
+
+function snapToGrid(value, step) {
+  return Math.round(value / step) * step;
+}
+
+function formatFraction(value) {
+  if (value === 0) return '0';
+  const whole = Math.floor(value);
+  const frac = value - whole;
+  if (frac < 0.01) return String(whole || 0);
+  // Find nearest fraction symbol
+  let best = null, bestDiff = 1;
+  for (const [v, s] of FRAC_VALUES) {
+    const diff = Math.abs(frac - v);
+    if (diff < bestDiff) { bestDiff = diff; best = s; }
   }
-  return q.toFixed(2).replace(/\.?0+$/, '');
+  if (bestDiff < 0.04) {
+    return whole > 0 ? `${whole}${best}` : best;
+  }
+  // Fallback to decimal for large values
+  return value > 30 ? String(Math.round(value)) : value.toFixed(1).replace(/\.0$/, '');
+}
+
+export function formatQty(rawQ, unit) {
+  const q = Number(rawQ);
+  if (isNaN(q)) return String(rawQ);
+  if (q === 0) return '0';
+
+  const u = (unit || '').toLowerCase();
+
+  // Grams — round to 5g below 200g, 10g above
+  if (u === 'g') {
+    const step = q >= 200 ? 10 : 5;
+    return String(Math.round(snapToGrid(q, step)));
+  }
+  // Millilitres — round to 5ml below 100ml, 25ml above
+  if (u === 'ml') {
+    const step = q >= 100 ? 25 : 5;
+    return String(Math.round(snapToGrid(q, step)));
+  }
+  // Kilograms / litres — 2 decimal max
+  if (u === 'kg' || u === 'l') {
+    return parseFloat(q.toFixed(2)).toString();
+  }
+  // Cups — try ⅓ increments first (⅓, ⅔), then snap to ⅛ (2 tbsp) increments
+  if (u === 'cup' || u === 'cups') {
+    // Check ⅓ and ⅔ first — these are common cup measures
+    const third = q * 3;
+    if (Math.abs(third - Math.round(third)) < 0.12) {
+      return formatFraction(Math.round(third) / 3);
+    }
+    const snapped = snapToGrid(q, 0.125);
+    return formatFraction(snapped);
+  }
+  // Tablespoons — snap to ½ tbsp
+  if (u === 'tbsp' || u === 'tablespoon' || u === 'tablespoons') {
+    const snapped = snapToGrid(q, 0.5);
+    return formatFraction(snapped);
+  }
+  // Teaspoons — snap to ¼ tsp
+  if (u === 'tsp' || u === 'teaspoon' || u === 'teaspoons') {
+    const snapped = snapToGrid(q, 0.25);
+    return formatFraction(snapped);
+  }
+  // Whole countable items (eggs, cloves, etc.) — round to nearest whole
+  if (u === 'unit' || u === 'whole' || u === 'clove' || u === 'cloves' ||
+      u === 'slice' || u === 'slices' || u === 'piece' || u === 'pieces' ||
+      u === 'stalk' || u === 'sheet' || u === 'scoop') {
+    return String(Math.round(q));
+  }
+  // Default — try fraction, fall back to decimal
+  return formatFraction(q);
 }
 
 // Detect prep tasks across the week's recipes (consolidates "mince garlic" across multiple meals)
@@ -131,31 +207,9 @@ function parseQty(str) {
   return parseFloat(str);
 }
 
-function formatScaledQty(value, originalText) {
-  // For very small numbers, keep more precision
-  if (value < 0.1) return value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-  if (value < 1) {
-    // Try to express as fraction
-    if (Math.abs(value - 0.25) < 0.02) return '¼';
-    if (Math.abs(value - 0.5) < 0.02) return '½';
-    if (Math.abs(value - 0.75) < 0.02) return '¾';
-    if (Math.abs(value - 0.333) < 0.03) return '⅓';
-    if (Math.abs(value - 0.667) < 0.03) return '⅔';
-    if (Math.abs(value - 0.125) < 0.02) return '⅛';
-    return value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-  }
-  if (value === Math.floor(value)) return String(Math.round(value));
-  // Mixed number
-  const whole = Math.floor(value);
-  const frac = value - whole;
-  if (Math.abs(frac - 0.25) < 0.02) return `${whole}¼`;
-  if (Math.abs(frac - 0.5) < 0.02) return `${whole}½`;
-  if (Math.abs(frac - 0.75) < 0.02) return `${whole}¾`;
-  if (Math.abs(frac - 0.333) < 0.03) return `${whole}⅓`;
-  if (Math.abs(frac - 0.667) < 0.03) return `${whole}⅔`;
-  // For larger numbers like 600.5 → 600
-  if (value > 30) return String(Math.round(value));
-  return value.toFixed(1).replace(/\.0$/, '');
+function formatScaledQty(value, originalText, unitHint) {
+  // Use the same kitchen-smart rounding as formatQty
+  return formatQty(value, unitHint);
 }
 
 // Scale numeric quantities mentioned in step text by `scale` (e.g. 1.5 = 1.5x).
@@ -177,6 +231,6 @@ export function scaleStepText(text, scale) {
     const value = parseQty(qtyStr);
     if (isNaN(value) || value <= 0) return match;
     const scaled = value * scale;
-    return `${formatScaledQty(scaled, qtyStr)} ${unit}`;
+    return `${formatScaledQty(scaled, qtyStr, unit)} ${unit}`;
   });
 }

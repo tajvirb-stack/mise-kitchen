@@ -1786,7 +1786,7 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
                 <li key={ing.id} className="sans" style={{ fontSize: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                     <span style={{ fontWeight: 500, minWidth: 60, flexShrink: 0, color: ing.protein ? '#A85C32' : '#2A1F1A' }}>
-                      {formatQty(ing.qty * scale)} {ing.unit !== 'unit' && ing.unit !== 'whole' ? ing.unit : ''}
+                      {formatQty(ing.qty * scale, ing.unit)} {ing.unit !== 'unit' && ing.unit !== 'whole' ? ing.unit : ''}
                     </span>
                     {editing ? (
                       <input value={ing.name}
@@ -3030,7 +3030,7 @@ function GroceryView({ groceryList, data, household }) {
                           {(
                             <div className="sans" style={{ fontSize: 11, color: '#8B6F47', marginTop: 2 }}>
                               For: {item.sources.map(s => s.recipeTitle).filter((v, i, a) => a.indexOf(v) === i).slice(0, 2).join(', ')}
-                              {item.hasInPantry && <span style={{ marginLeft: 6, color: '#5C7A3A' }}>· {formatQty(item.have)} in pantry</span>}
+                              {item.hasInPantry && <span style={{ marginLeft: 6, color: '#5C7A3A' }}>· {formatQty(item.have, item.unit)} in pantry</span>}
                             </div>
                           )}
                         </div>
@@ -3039,7 +3039,7 @@ function GroceryView({ groceryList, data, household }) {
                           fontWeight: 500, color: '#A85C32',
                           minWidth: 65, textAlign: 'right'
                         }}>
-                          {formatQty(item.need)} <span style={{ fontSize: 13, color: '#8B6F47' }}>{item.unit !== 'unit' ? item.unit : ''}</span>
+                          {formatQty(item.need, item.unit)} <span style={{ fontSize: 13, color: '#8B6F47' }}>{item.unit !== 'unit' ? item.unit : ''}</span>
                         </div>
                       </button>
                     );
@@ -3598,7 +3598,7 @@ function PrepView({ prepTasks, weekPlan, recipes }) {
                           {t.task}
                         </div>
                         <div className="sans" style={{ fontSize: 12, color: '#8B6F47' }}>
-                          Total: <strong>{formatQty(t.totalQty)} {t.unit !== 'unit' ? t.unit : ''}</strong> · {t.recipes.length} recipe{t.recipes.length > 1 ? 's' : ''}
+                          Total: <strong>{formatQty(t.totalQty, t.unit)} {t.unit !== 'unit' ? t.unit : ''}</strong> · {t.recipes.length} recipe{t.recipes.length > 1 ? 's' : ''}
                         </div>
                       </div>
                     </button>

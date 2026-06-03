@@ -351,7 +351,8 @@ export const SEED_RECIPES = [
         parallelTask:'While it simmers: chop garnishes, slice cooked items, set out serving plates.'},
       { id:'hf007_s6', phase:'plate', timerSec:null,
         text:'Divide tagine between 2 shallow bowls, salmon on top. Sprinkle generously with chopped parsley. Serve with crusty bread to soak up the sauce.' }
-    ]
+    ],
+        prepNote:'→ these aromatics go into the poaching liquid (step 2)'
   },
 
   // ==========================================================================
@@ -396,13 +397,15 @@ export const SEED_RECIPES = [
         text:'Make Greek salad: in a medium bowl, toss diced cucumber + tomato + bell pepper + minced shallot with remaining 1-2 tbsp lemon juice + 1 tbsp olive oil + ¼ tsp salt + ⅛ tsp pepper. Let sit while chicken cooks.' ,
         prepNote: '→ sits alongside the rice in the bowl'},
       { id:'hf008_s5', phase:'prep', timerSec:null,
-        text:'Pat chicken very dry. Season both sides evenly with the 1 tbsp Zesty Garlic blend + ¼ tsp additional coarse salt + ⅛ tsp pepper. Rub the seasoning in firmly.' },
+        text:'Pat chicken very dry. Season both sides evenly with the 1 tbsp Zesty Garlic blend + ¼ tsp additional coarse salt + ⅛ tsp pepper. Rub the seasoning in firmly.',
+        prepNote:'→ goes straight into the hot skillet (next step)' },
       { id:'hf008_s6', phase:'cook', timerSec:540,
         text:'Heat a 12-inch non-stick skillet over medium-high with 1 tbsp olive oil. When oil shimmers, place chicken smooth-side-down. Sear undisturbed 4-5 min until deep golden crust forms. Flip, reduce heat to MEDIUM, cook 4-5 more min until thermometer reads 75°C. Rest on cutting board 5 min, then slice on the bias into ½-inch slices.',
         airFryerAlt: { text:'Brush seasoned chicken with 1 tsp olive oil. Place on Cuisinart wire rack. AIR FRY at 195°C for 14-18 min, flipping at 8 min, until internal temp reads 75°C. Rest 5 min before slicing.', timerSec:1080 } },
       { id:'hf008_s7', phase:'plate', timerSec:null,
         text:'Divide rice between 2 wide bowls. Top each with a portion of Greek salad and the sliced chicken. Drizzle yogurt sauce in a generous zigzag. Sprinkle crumbled feta over the top.' }
-    ]
+    ],
+        prepNote:'→ chicken goes straight into the skillet (next step)'
   },
 
   // ==========================================================================
@@ -545,7 +548,8 @@ export const SEED_RECIPES = [
         text:'Off heat. Stir in the sliced green onions + ¼ tsp salt + ⅛ tsp pepper. Taste and adjust.' },
       { id:'hf011_s7', phase:'plate', timerSec:null,
         text:'Slice chicken on the bias into ½-inch slices. Plate: pile of crispy potato wedges + sliced chicken + corn salsa. Serve ranch in small bowls alongside for dipping or drizzling.' }
-    ]
+    ],
+        prepNote:'→ chicken goes onto the sheet pan (next step)'
   },
 
   // ==========================================================================
@@ -786,15 +790,18 @@ export const SEED_RECIPES = [
       { id:'hf016_s3', phase:'cook', timerSec:90,
         text:'Add the 1 tbsp Tex-Mex paste + 2 tbsp tomato paste + 2 tbsp water. Stir constantly 60-90 seconds until the paste darkens and the mixture is glossy.' },
       { id:'hf016_s4', phase:'prep', timerSec:null,
-        text:'Place flatbreads on a half sheet pan (or two if needed). Divide chicken mixture evenly between flatbreads, spreading to the edges. Top each with ¼ cup shredded cheddar.' },
+        text:'Place flatbreads on a half sheet pan (or two if needed). Divide chicken mixture evenly between flatbreads, spreading to the edges. Top each with ¼ cup shredded cheddar.' ,
+        prepNote:'→ flatbreads go into the oven for final toast (step 5)'},
       { id:'hf016_s5', phase:'cook', timerSec:540,
         text:'Bake in oven 8-10 min until cheese is bubbly with brown spots and flatbread edges are golden-crispy. (If flatbreads are getting too dark before cheese melts, drop oven to 220°C.)',
         airFryerAlt: { text:'Set Cuisinart AIR FRY at 210°C. Place 1 topped flatbread on the rack (likely won\'t fit both at once — bake in 2 rounds, OR use bake mode for both). AIR FRY 6-8 min until cheese is bubbly and edges crisp. Repeat for second flatbread (keeps the first warm under foil).', timerSec:480 } },
       { id:'hf016_s6', phase:'prep', timerSec:null,
-        text:'Make crema: in a small bowl, mix 3 tbsp sour cream + 1 tsp lime juice + 1 tsp water + a small pinch of salt. Drizzle consistency.' },
+        text:'Make crema: in a small bowl, mix 3 tbsp sour cream + 1 tsp lime juice + 1 tsp water + a small pinch of salt. Drizzle consistency.' ,
+        prepNote:'→ crema drizzled over the finished flatbreads at plating'},
       { id:'hf016_s7', phase:'plate', timerSec:null,
         text:'Cut flatbreads into wedges (like a pizza). Drizzle with lime crema. Sprinkle with sliced green onions. Lime wedges alongside for squeezing.' }
-    ]
+    ],
+        prepNote:'→ this is the crema drizzled over the finished flatbreads'
   },
 
   // ==========================================================================
@@ -1058,7 +1065,8 @@ export const SEED_RECIPES = [
         text:'Whisk 1 cup egg whites with 2 whole eggs in a bowl. Pour over the skillet mixture. Reduce heat to MEDIUM-LOW. Stir gently with a silicone spatula until eggs are just set but still creamy, 2-3 min.' },
       { id:'bf002_s6', phase:'plate', timerSec:null,
         text:'Plate immediately or portion into two meal-prep containers. Reheats well for 3 days — microwave 90 sec covered.' }
-    ]
+    ],
+        prepNote:'→ sweet potato goes straight into the skillet (next step)'
   },
 
   {
@@ -1149,7 +1157,8 @@ export const SEED_RECIPES = [
       { id:'bf005_s3', phase:'cook', timerSec:null,
         text:'Repeat until all batter is used — should make 8 pancakes. Transfer to a wire rack to cool completely (15 min). Cooling on a rack prevents soggy bottoms.' },
       { id:'bf005_s4', phase:'prep', timerSec:null,
-        text:'Stack with small squares of parchment paper between each pancake. Place stack in a zip-top freezer bag. Freezes 2 months.' },
+        text:'Stack with small squares of parchment paper between each pancake. Place stack in a zip-top freezer bag. Freezes 2 months.' ,
+        prepNote:'→ freeze for meal prep — keeps 3 months'},
       { id:'bf005_s5', phase:'plate', timerSec:90,
         text:'Reheat from frozen: microwave 60-90 sec, OR air fryer at 175°C for 3 min. Serve 2 pancakes per breakfast topped with Greek yogurt, berries, or a drizzle of hot honey.' }
     ]
@@ -1187,10 +1196,12 @@ export const SEED_RECIPES = [
       { id:'lw001_s3', phase:'cook', timerSec:90,
         text:'Whisk eggs with ¼ tsp salt and pepper. Pour into the same hot skillet (bacon fat adds flavor). Stir with a silicone spatula for 60 seconds until almost set, then fold in 1 cup spinach. Toss until wilted, about 30 sec more.' },
       { id:'lw001_s4', phase:'prep', timerSec:20,
-        text:'Warm wrap in a dry pan over medium 20 sec to prevent cracking when rolling.' },
+        text:'Warm wrap in a dry pan over medium 20 sec to prevent cracking when rolling.' ,
+        prepNote:'→ warm wrap makes it pliable for rolling'},
       { id:'lw001_s5', phase:'plate', timerSec:null,
         text:'Layer on the warm wrap: eggs first (centered, leaving 2 inches at top and bottom), then turkey bacon, then hash brown. Fold sides in, then roll tightly bottom-to-top. Slice diagonally.' }
-    ]
+    ],
+        prepNote:'→ warm wrap makes it pliable so it rolls without cracking'
   },
 
   {
@@ -1226,10 +1237,12 @@ export const SEED_RECIPES = [
       { id:'lw002_s4', phase:'cook', timerSec:90,
         text:'Whisk eggs with ¼ tsp smoked paprika and a pinch of salt. Scramble in the same skillet 60 sec, then fold in 1 cup spinach for 30 sec until wilted.' },
       { id:'lw002_s5', phase:'prep', timerSec:20,
-        text:'Warm wrap 20 sec in a dry pan.' },
+        text:'Warm wrap 20 sec in a dry pan.' ,
+        prepNote:'→ warm wrap right before rolling'},
       { id:'lw002_s6', phase:'plate', timerSec:null,
         text:'Spread sriracha-mayo across the wrap. Layer eggs, turkey bacon, hash brown, then top with pickled jalapeño slices. Roll tight, slice diagonally.' }
-    ]
+    ],
+        prepNote:'→ warm wrap right before assembly so it rolls cleanly'
   },
 
   {
@@ -1261,10 +1274,12 @@ export const SEED_RECIPES = [
       { id:'lw003_s2', phase:'cook', timerSec:90,
         text:'Whisk eggs with ¼ tsp oregano and pepper. Scramble in the same skillet 60 sec, then fold in 2 cups spinach until fully wilted. Off heat, squeeze 1 tsp lemon juice over eggs and crumble 2 tbsp feta on top — residual heat softens it.' },
       { id:'lw003_s3', phase:'prep', timerSec:20,
-        text:'Warm wrap 20 sec in a dry pan.' },
+        text:'Warm wrap 20 sec in a dry pan.' ,
+        prepNote:'→ warm wrap right before rolling'},
       { id:'lw003_s4', phase:'plate', timerSec:null,
         text:'Layer egg mixture, turkey bacon, hash brown. Sprinkle ¼ tsp red pepper flakes. Roll tight.' }
-    ]
+    ],
+        prepNote:'→ warm wrap right before rolling'
   },
 
   {
@@ -1295,10 +1310,12 @@ export const SEED_RECIPES = [
       { id:'lw004_s2', phase:'cook', timerSec:90,
         text:'Whisk eggs with ¼ tsp cumin and salt. Scramble in skillet 60 sec, fold in 1 cup spinach for 30 sec.' },
       { id:'lw004_s3', phase:'prep', timerSec:20,
-        text:'Warm wrap 20 sec in a dry pan.' },
+        text:'Warm wrap 20 sec in a dry pan.' ,
+        prepNote:'→ warm wrap right before rolling'},
       { id:'lw004_s4', phase:'plate', timerSec:null,
         text:'Spread 2 tbsp salsa verde across wrap. Layer eggs, turkey bacon, hash brown, then avocado slices. Roll tightly — the avocado makes it rich enough without any other sauce.' }
-    ]
+    ],
+        prepNote:'→ warm wrap right before rolling'
   },
 
   {
@@ -1331,10 +1348,12 @@ export const SEED_RECIPES = [
       { id:'lw005_s3', phase:'cook', timerSec:90,
         text:'Whisk eggs with salt and pepper. Scramble in the same skillet, fold in 1 cup spinach.' },
       { id:'lw005_s4', phase:'prep', timerSec:20,
-        text:'Warm wrap 20 sec in a dry pan.' },
+        text:'Warm wrap 20 sec in a dry pan.' ,
+        prepNote:'→ warm wrap right before rolling'},
       { id:'lw005_s5', phase:'plate', timerSec:null,
         text:'Drizzle 1 tbsp ranch across the wrap. Layer eggs, buffalo turkey bacon, hash brown, blue cheese if using. Roll tight and eat immediately — the heat is best fresh.' }
-    ]
+    ],
+        prepNote:'→ warm wrap right before assembly'
   },
 
   {
@@ -1365,10 +1384,12 @@ export const SEED_RECIPES = [
       { id:'lw006_s2', phase:'cook', timerSec:90,
         text:'Whisk eggs with salt and pepper. Scramble in skillet 60 sec, fold in 1 cup spinach.' },
       { id:'lw006_s3', phase:'prep', timerSec:20,
-        text:'Warm wrap 20 sec in a dry pan.' },
+        text:'Warm wrap 20 sec in a dry pan.' ,
+        prepNote:'→ warm wrap right before rolling'},
       { id:'lw006_s4', phase:'plate', timerSec:null,
         text:'Spread 1 tbsp pesto on the warm wrap. Layer eggs, turkey bacon, 2 tbsp sliced roasted peppers, hash brown. Sprinkle 1 tbsp parmesan. Roll tight, slice diagonally.' }
-    ]
+    ],
+        prepNote:'→ warm wrap right before rolling'
   },
 
   // ==========================================================================
@@ -1407,7 +1428,7 @@ export const SEED_RECIPES = [
       { id:'lb001_s1', phase:'cook', timerSec:900,
         text:'Cook rice: rinse 1 cup jasmine rice until water runs clear. Add to a small saucepan with 1½ cups water and ¼ tsp salt. Bring to a boil, cover, reduce to LOW. Simmer 15 min. Off heat, rest covered 5 min, then fluff with a fork.' ,
         parallelTask:'While rice cooks: do all the prep below (chop veg, slice protein, make sauces). 15 minutes is enough to get everything ready.'},
-      { id:'lb001_s2', phase:'prep', timerSec:null,
+      { id:'lb001_s2', phase:'prep', timerSec:null, prepNote:'→ sauce gets poured over the beef (step 4)',
         text:'In a small bowl, whisk 2 tbsp gochujang + 1 tbsp soy sauce + 1 tbsp rice vinegar + 1 tsp sesame oil + 1 tsp honey. This is the glaze.' },
       { id:'lb001_s3', phase:'cook', timerSec:360,
         text:'Heat a 12-inch skillet over MEDIUM-HIGH. Add 450g ground beef. Break it up with a wooden spoon and brown 5-6 min until no pink remains. Drain excess fat (leave ~1 tbsp in the pan for flavor).' },
@@ -1417,7 +1438,8 @@ export const SEED_RECIPES = [
         text:'In a separate small non-stick pan, heat 1 tsp oil over MEDIUM. Crack 2 eggs and fry sunny-side up, 2-3 min until whites are set but yolks are still runny.' },
       { id:'lb001_s6', phase:'plate', timerSec:null,
         text:'Divide rice between 2 bowls. Top with gochujang beef, ¼ cup kimchi each, and a fried egg. Sprinkle sliced scallions and sesame seeds. Break the yolk to mix into the rice.' }
-    ]
+    ],
+        prepNote:'→ this is the sauce tossed with beef and drizzled over the bowl'
   },
 
   {
@@ -1488,7 +1510,8 @@ export const SEED_RECIPES = [
         text:'While chicken cooks: pour 1 cup boiling water over 1 cup couscous in a heat-safe bowl. Cover with a plate. Let sit 5 min, then fluff with a fork.' },
       { id:'lb003_s4', phase:'plate', timerSec:null,
         text:'Divide couscous and greens between 2 bowls. Top with sliced chicken, diced cucumber, feta, olives. Dollop tzatziki. Squeeze remaining lemon juice over everything.' }
-    ]
+    ],
+        prepNote:'→ chicken goes straight into the skillet (next step)'
   },
 
   {
@@ -1519,12 +1542,14 @@ export const SEED_RECIPES = [
       { id:'lb004_s1', phase:'prep', timerSec:120,
         text:'Microwave frozen edamame with 1 tbsp water in a covered bowl for 2 min. Drain. Slice cucumber and avocado.' },
       { id:'lb004_s2', phase:'prep', timerSec:null,
-        text:'Stir 1 tbsp mayo with 1 tsp sriracha for spicy mayo. Add more sriracha if you want extra heat.' },
+        text:'Stir 1 tbsp mayo with 1 tsp sriracha for spicy mayo. Add more sriracha if you want extra heat.' ,
+        prepNote:'→ spicy mayo drizzled over the finished bowl'},
       { id:'lb004_s3', phase:'cook', timerSec:60,
         text:'Microwave ¾ cup rice 60 sec to warm. Flake 140g salmon into bite-size pieces. Drizzle ½ tsp soy sauce over the salmon.' },
       { id:'lb004_s4', phase:'plate', timerSec:null,
         text:'In a bowl: rice as base, then arrange salmon, edamame, cucumber, avocado in sections like a chirashi bowl. Drizzle spicy mayo across. Top with sesame seeds, scallions, and crumbled nori.' }
-    ]
+    ],
+        prepNote:'→ spicy mayo drizzled over the finished bowl'
   }
 
 ];
