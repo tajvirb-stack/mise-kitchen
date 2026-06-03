@@ -931,8 +931,7 @@ function HomeView({ data, groceryList, setView, setActiveRecipeId }) {
       {/* Snap meal photo button */}
       <SnapMealPhotoButton />
 
-      {/* Food log (collapsible quick-add) */}
-      <FoodLog date={new Date().toISOString().split('T')[0]} />
+      {/* FoodLog is rendered above inside NutritionGate — removed duplicate */}
 
       {/* Quick stats footer — 3 tiles */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 16, marginBottom: stats.totalCooked > 0 ? 12 : 0 }}>
@@ -1959,6 +1958,27 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+              {/* Restore original option — only shown if ingredient was previously swapped */}
+              {swapModal.ing._swappedFrom && swapModal.ing._swappedFrom !== swapModal.ing.name && (
+                <button
+                  onClick={() => !swapping && applySwap(swapModal.ing, swapModal.ing._swappedFrom)}
+                  disabled={swapping}
+                  style={{
+                    padding: '14px 16px', borderRadius: 10, cursor: swapping ? 'wait' : 'pointer',
+                    background: '#F0F5E8', border: '1px solid #5C7A3A',
+                    borderLeft: '4px solid #5C7A3A', textAlign: 'left',
+                    opacity: swapping ? 0.6 : 1
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div style={{ flex: 1 }}>
+                      <div className='sans' style={{ fontSize: 11, color: '#5C7A3A', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Restore original</div>
+                      <div className='sans' style={{ fontSize: 14, color: '#2A1F1A' }}>{swapModal.ing._swappedFrom}</div>
+                    </div>
+                    <RotateCcw size={16} color='#5C7A3A' />
+                  </div>
+                </button>
+              )}
               {swapModal.subs.substitutes.map((sub, i) => (
                 <button
                   key={i}
@@ -2045,15 +2065,10 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
 
   // Resolve all steps for current equipment/ingredient mode
   const allSteps = useMemo(() => {
-    const resolved = (recipe.steps || []).map(s => fullyResolveStep(s, eqMode, ingMode));
-    // Sort by phase: prep first, then cook, then plate
-    // Within each phase, preserve original recipe order
-    const phaseOrder = { prep: 0, cook: 1, plate: 2 };
-    return [...resolved].sort((a, b) => {
-      const pa = phaseOrder[a.phase || 'cook'] ?? 1;
-      const pb = phaseOrder[b.phase || 'cook'] ?? 1;
-      return pa - pb;
-    });
+    // Keep ORIGINAL recipe order — the recipe author ordered steps intentionally.
+    // e.g. "Season chicken (prep)" comes AFTER "Roast veg (cook)" because you do it
+    // during the roasting time. Sorting by phase would break this logic.
+    return (recipe.steps || []).map(s => fullyResolveStep(s, eqMode, ingMode));
   }, [recipe.steps, eqMode, ingMode]);
 
   // Per-step timers: { [stepId]: { initial, deadline, running, done } }
@@ -2209,14 +2224,19 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
         <div style={{ height: '100%', background: '#5C7A3A', width: `${totalSteps > 0 ? (totalChecked / totalSteps) * 100 : 0}%`, transition: 'width 0.4s' }} />
       </div>
 
-      {/* All steps — grouped by phase with divider labels */}
+      {/* All steps in original recipe order — phase badges on each card */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {allSteps.map((step, idx) => {
-          const prevPhase = idx > 0 ? (allSteps[idx - 1].phase || 'cook') : null;
           const thisPhase = step.phase || 'cook';
-          const showPhaseHeader = thisPhase !== prevPhase;
-          const phaseStepCount = allSteps.filter(s => (s.phase || 'cook') === thisPhase).length;
+          // Show a "while X cooks" hint when a prep step immediately follows a cook step with a timer
+          const prevStep = idx > 0 ? allSteps[idx - 1] : null;
+          const prevHasTimer = prevStep && prevStep.timerSec && prevStep.timerSec >= 180;
+          const showParallelHint = thisPhase === 'prep' && prevStep && (prevStep.phase || 'cook') === 'cook' && prevHasTimer;
+          const parallelHintText = showParallelHint
+            ? `⏱ Do this while ${prevStep.text.split(' ').slice(0, 4).join(' ').toLowerCase()}… is going`
+            : null;
           const phaseLabel = { prep: '🥣 Prep', cook: '🔥 Cook', plate: '🍽️ Plate & serve' }[thisPhase] || thisPhase;
+          const phaseStepCount = 0; // no longer grouping
           const phase = phaseConfig[step.phase || 'cook'] || phaseConfig.cook;
           const timer = timers[step.id];
           const isChecked = checked.has(step.id);
@@ -2225,23 +2245,18 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
 
           return (
             <React.Fragment key={step.id}>
-            {showPhaseHeader && (
+            {/* Parallel hint — shown when this prep step can be done while previous cook step runs */}
+            {parallelHintText && (
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                padding: '8px 0 4px',
-                marginTop: idx === 0 ? 0 : 8
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '6px 12px', background: '#FFF8F2',
+                border: '1px solid #F5C9B0', borderRadius: 8,
+                marginTop: 4
               }}>
-                <div style={{ flex: 1, height: 1, background: '#E8DDC9' }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span className="sans" style={{
-                    fontSize: 11, fontWeight: 700, color: phase.color,
-                    letterSpacing: '0.12em', textTransform: 'uppercase'
-                  }}>{phaseLabel}</span>
-                  <span className="sans" style={{
-                    fontSize: 10, color: phase.color, opacity: 0.6
-                  }}>({phaseStepCount} step{phaseStepCount !== 1 ? 's' : ''})</span>
-                </div>
-                <div style={{ flex: 1, height: 1, background: '#E8DDC9' }} />
+                <Sparkles size={12} color="#A85C32" />
+                <span className="sans" style={{ fontSize: 12, color: '#5C4A3A', fontStyle: 'italic' }}>
+                  {parallelHintText}
+                </span>
               </div>
             )}
             {isChecked ? (

@@ -52,7 +52,7 @@ export const SEED_RECIPES = [
         text:'Pour in 1¼ cups water and ¼ tsp coarse salt. Bring to a rolling boil, then cover and reduce heat to LOW. Cook 15 minutes until water is fully absorbed and rice is tender. Remove from heat, keep covered, rest 5 min before fluffing.' ,
         parallelTask:'While rice cooks: do all the prep below (chop veg, slice protein, make sauces). 15 minutes is enough to get everything ready.'},
       { id:'hf001_s3', phase:'prep', timerSec:null,
-        text:'While rice cooks: thinly slice green onions on a diagonal (whites and greens together). Grate the peeled carrot on the large holes of a box grater.' },
+        text:'While rice cooks — prep the garnishes (takes 3 min): thinly slice green onions on a diagonal (whites and greens together). Grate the peeled carrot on the large holes of a box grater. Set aside — these go into the slaw at the next step.' },
       { id:'hf001_s4', phase:'prep', timerSec:null,
         text:'In a large bowl, whisk together 1 tbsp rice vinegar, 1 tsp granulated sugar, 1 tbsp neutral oil (vegetable or canola), ¼ tsp salt, and 2 grinds of black pepper. Add the shredded cabbage, grated carrot, and ¾ of the sliced green onions (save the rest for garnish). Toss to coat. Set aside while you cook the beef — the cabbage will soften slightly.' },
       { id:'hf001_s5', phase:'cook', timerSec:360,
@@ -64,7 +64,8 @@ export const SEED_RECIPES = [
         pasteAlt: { text:'Reduce heat to MEDIUM. Add the ginger-garlic paste to the beef. Stir constantly 30 seconds — paste cooks faster than fresh and burns easily. Add the 4 tbsp hoisin and remaining ½ tbsp sesame oil. Stir 30 seconds until glossy. Off heat.', timerSec:60 } },
       { id:'hf001_s7', phase:'plate', timerSec:null,
         text:'Fluff rice with a fork. Stir in the 1 tbsp black sesame seeds. Divide rice between 2 wide bowls. Top each with beef, then a generous mound of cabbage slaw. Drizzle 2 tbsp plum sauce per bowl. Sprinkle with crispy shallots and reserved green onions. Serve immediately.' }
-    ]
+    ],
+        prepNote:'→ go into the slaw (next step) and as garnish at plating'
   },
 
   // ==========================================================================
@@ -105,7 +106,7 @@ export const SEED_RECIPES = [
         airFryerAlt: { text:'Set Cuisinart air fryer to AIR FRY mode at 225°C (oven was 230°C, drop -10°C). Toss zucchini and bell pepper with 1 tbsp olive oil, ½ tsp coarse salt, ¼ tsp pepper. Arrange in single layer on the wire/perforated tray (use the AirFryer basket setup). Air fry 10-12 minutes, shaking tray at 6 minutes, until edges are browned.', timerSec:660 } ,
         parallelTask:'While the oven works: prep the rest of the ingredients (chop, slice, make sauces). 15 minutes is enough for all prep.'},
       { id:'hf002_s3', phase:'prep', timerSec:null,
-        text:'Pat chicken breasts very dry with paper towels (key for browning). Season both sides evenly with ½ tbsp of the Moroccan spice blend (save the other ½ tbsp for the stew), ½ tsp coarse salt, and ¼ tsp pepper.' },
+        text:'While veg roast — season the chicken (takes 2 min): pat chicken breasts very dry with paper towels (essential for a good sear). Season both sides evenly with ½ tbsp Moroccan spice blend (save the other ½ tbsp for the stew), ½ tsp coarse salt, and ¼ tsp pepper. Set on a plate — ready to sear when veg comes out.' },
       { id:'hf002_s4', phase:'cook', timerSec:600,
         text:'Heat a 12-inch oven-safe skillet (cast iron or stainless) over medium-high with 1 tbsp olive oil. When oil shimmers, place chicken smooth-side-down. Sear undisturbed 4 min until a deep golden crust forms. Flip and sear 1 more min. Transfer skillet to the oven (or transfer chicken to a baking sheet). Roast 5-7 minutes until a thermometer inserted in the thickest part reads 75°C. Transfer to a cutting board, rest 5 min.',
         airFryerAlt: { text:'Skip stovetop sear if using air fryer for the chicken. Brush chicken with 1 tsp olive oil per side. Place on wire rack of Cuisinart air fryer set to AIR FRY at 195°C. Cook 14-18 min depending on thickness, flipping at 8 min, until internal temp reads 75°C. Rest 5 min on a cutting board before slicing.', timerSec:1080 } ,
@@ -117,7 +118,8 @@ export const SEED_RECIPES = [
         text:'Add 2 tbsp tomato paste to the skillet. Stir constantly 60 seconds until it darkens to brick-red (this builds flavor). Add 1 tbsp red wine vinegar and stir. Add the drained chickpeas + ⅓ cup water. Simmer uncovered, stirring occasionally, 5-6 minutes until thickened and chickpeas have absorbed flavor.' },
       { id:'hf002_s7', phase:'plate', timerSec:null,
         text:'Stir the roasted vegetables and half the chopped parsley into the chickpea stew. Make the yogurt sauce: in a small bowl, mix ⅓ cup Greek yogurt + 1 tbsp lemon juice + ¼ tsp salt + 1 tbsp water. Slice chicken on the bias into ½-inch slices. Plate: stew on the bottom, sliced chicken on top, drizzle yogurt sauce in a generous zigzag, sprinkle remaining parsley.' }
-    ]
+    ],
+        prepNote:'→ goes into the hot skillet (step 4)'
   },
 
   // ==========================================================================
@@ -152,8 +154,8 @@ export const SEED_RECIPES = [
         text:'Preheat oven to 220°C with rack in the middle. In a medium saucepan, combine the rice + 1½ cups water + ¼ tsp coarse salt + ¾ tsp of the Golden Turmeric blend (save the rest). Bring to a rolling boil, then reduce heat to LOW, cover, and cook 22-25 min (for brown rice) or 15 min (jasmine) until water is absorbed.' ,
         parallelTask:'While rice cooks: do all the prep below (chop veg, slice protein, make sauces). 15 minutes is enough to get everything ready.'},
       { id:'hf003_s2', phase:'prep', timerSec:null,
-        text:'Pat chicken dry with paper towels. In a bowl, toss with ½ tbsp olive oil + remaining ¾ tsp Golden Turmeric + the 1 tbsp Mexican seasoning + ½ tsp coarse salt + ¼ tsp pepper + half the minced garlic. Rub the spice mixture in evenly with your hands. Core and slice bell pepper into ½-inch strips. Halve zucchini and cut into ½-inch half-moons.' ,
-        prepNote: '→ chicken goes into oven (step 3), veg get sautéed (step 4)'},
+        text:'While rice cooks — do all of this now: (1) Pat chicken dry with paper towels. Toss in a bowl with ½ tbsp olive oil + remaining ¾ tsp Golden Turmeric + 1 tbsp Mexican seasoning + ½ tsp coarse salt + ¼ tsp pepper + half the minced garlic. Rub in evenly with your hands — chicken goes into the oven next. (2) Core and slice bell pepper into ½-inch strips. Halve zucchini and cut into ½-inch half-moons — these go into the pan at step 4.' ,
+        prepNote:'→ chicken goes into hot skillet (step 3), veg go into the pan (step 4)'},
       { id:'hf003_s3', phase:'cook', timerSec:600,
         text:'Heat a 12-inch oven-safe skillet over medium-high with 1 tbsp olive oil. Sear chicken smooth-side-down undisturbed 4 min until a deep golden crust forms. Flip, sear 1 min. Transfer skillet to oven, roast 5-7 min until thermometer reads 75°C internal. Rest 5 min on cutting board.',
         airFryerAlt: { text:'Skip stovetop sear. Place seasoned chicken on Cuisinart air fryer wire rack. Set to AIR FRY at 195°C. Cook 14-18 min, flipping at 8 min, until internal temp reads 75°C. Rest 5 min on cutting board before slicing.', timerSec:1080 } ,
@@ -161,11 +163,12 @@ export const SEED_RECIPES = [
       { id:'hf003_s4', phase:'cook', timerSec:300,
         text:'In the chicken skillet (or a fresh 10-inch non-stick pan), medium-high heat with 1 tbsp olive oil. Add bell pepper + zucchini in a single layer. Cook undisturbed 2 min, then toss and cook 3 more min until edges char and vegetables are tender-crisp. Season with ¼ tsp salt + ⅛ tsp pepper. Off heat.' },
       { id:'hf003_s5', phase:'prep', timerSec:null,
-        text:'Finely chop cilantro — you should have about 2 tbsp. Zest the entire lime with a microplane (about 1 tsp zest), then juice half (about 1 tbsp juice). In a small bowl, mix ⅓ cup Greek yogurt + 1 tbsp lime juice + remaining minced garlic + 1 tbsp water + 2 tbsp chopped cilantro + ¼ tsp salt + ⅛ tsp pepper.',
+        text:'While chicken rests — make the herby yogurt sauce (takes 2 min): finely chop cilantro (about 2 tbsp). Zest the entire lime (about 1 tsp), then juice half (about 1 tbsp). In a small bowl mix: ⅓ cup Greek yogurt + 1 tbsp lime juice + remaining minced garlic + 1 tbsp water + 2 tbsp cilantro + ¼ tsp salt. This gets drizzled at the end.',
         pasteAlt: { text:'Finely chop cilantro. Zest the entire lime, juice half. In a small bowl, mix ⅓ cup Greek yogurt + 1 tbsp lime juice + remaining ½ tsp garlic paste + 1 tbsp water + 2 tbsp chopped cilantro + ¼ tsp salt + ⅛ tsp pepper.', timerSec:null } },
       { id:'hf003_s6', phase:'plate', timerSec:null,
         text:'Fluff the rice with a fork, stir in the lime zest. Slice the chicken on the bias into ½-inch slices. Plate: bed of lime rice, then the roasted vegetables alongside, then the sliced chicken on top. Drizzle the herby yogurt sauce in a zigzag. Cut the remaining lime half into wedges and serve alongside for squeezing.' }
-    ]
+    ],
+        prepNote:'→ drizzled over the finished bowls at plating'
   },
 
   // ==========================================================================
@@ -247,8 +250,8 @@ export const SEED_RECIPES = [
         airFryerAlt: { text:'Set Cuisinart AIR FRY mode at 210°C. Toss vegetables with 2 tbsp olive oil + ¾ tbsp Chili-Cumin blend + ¾ tsp salt + ¼ tsp pepper. Spread on the wire/perforated tray in single layer. Cook 22-25 min, shaking tray at 12 min, until deeply browned. The fan circulates better than oven — check earlier.', timerSec:1380 } ,
         parallelTask:"While the oven works: prep all remaining ingredients so you're ready to plate the moment it's done."},
       { id:'hf005_s3', phase:'prep', timerSec:null,
-        text:'Pat chicken thighs very dry with paper towels. In a bowl, toss with 1 tbsp olive oil + remaining ¾ tbsp Chili-Cumin blend + the 2 tbsp Piri Piri sauce + ½ tsp salt + ¼ tsp pepper. Coat every surface.' ,
-        prepNote: '→ this chicken goes on its own pan in the oven (step 4)'},
+        text:'While veg roast — prep the chicken (takes 3 min): pat chicken thighs very dry with paper towels. In a bowl, toss with 1 tbsp olive oil + remaining ¾ tbsp Chili-Cumin blend + ½ tbsp piri piri sauce + ½ tsp coarse salt + ¼ tsp pepper. Massage the seasoning in with your hands. Set aside — goes into the oven on its own pan at step 4.' ,
+        prepNote:'→ goes onto its own sheet pan in the oven (step 4)'},
       { id:'hf005_s4', phase:'cook', timerSec:1500,
         text:'Place chicken thighs on a separate small sheet pan (or push vegetables to one side of the same pan if it fits). Roast in the same 220°C oven 23-25 min until thermometer in thickest part reads 75°C. Chicken thighs are forgiving — a little extra time only makes them juicier.',
         airFryerAlt: { text:'Place chicken thighs on the Cuisinart wire rack (clean from veg). AIR FRY at 210°C for 17-20 min, flipping at 10 min, until internal temp reads 75°C. Thighs are forgiving — they stay juicy even at 80°C.', timerSec:1080 } ,
@@ -257,8 +260,8 @@ export const SEED_RECIPES = [
         text:'Final 2 minutes: switch oven to BROIL (maximum heat setting). Watch closely — pull as soon as the chicken tops are charred in spots (90-150 seconds). This adds smoky depth. If using air fryer, this step is unnecessary — air fryer already chars the surface.',
         airFryerAlt: { text:'Skip — air fryer already chars the surface in the previous step. No broil needed.', timerSec:0 } },
       { id:'hf005_s6', phase:'prep', timerSec:null,
-        text:'Make yogurt sauce: in a small bowl, mix ⅓ cup Greek yogurt + 1 tbsp lemon juice + half the chopped cilantro + ¼ tsp salt + 1 tbsp water. Taste; if too thick, add 1 more tsp water.' ,
-        prepNote: '→ drizzled over the finished chicken at the end'},
+        text:'While chicken roasts — make yogurt sauce (takes 1 min): in a small bowl mix ⅓ cup Greek yogurt + 1 tbsp lemon juice + half the chopped cilantro + ¼ tsp salt. Stir well. This is the drizzle sauce for plating.' ,
+        prepNote:'→ drizzled over the finished dish at plating'},
       { id:'hf005_s7', phase:'plate', timerSec:null,
         text:'Plate the roasted vegetables. Top with chicken thighs. Drizzle the cilantro-yogurt sauce in a generous zigzag. Sprinkle with the crumbled feta and remaining cilantro. Lemon wedges on the side.' }
     ]
@@ -296,8 +299,8 @@ export const SEED_RECIPES = [
         text:'In a medium saucepan, bring 1¼ cups water + 1 tsp Better Than Bouillon (whisk to dissolve) to a boil. Add rice, stir once, reduce to LOW, cover, cook 15 min. Off heat, stir in the frozen edamame + ½ tbsp sesame seeds. Cover, rest 5 min (residual heat thaws edamame).' ,
         parallelTask:"While rice cooks: do all the prep below (chop veg, slice protein, make sauces) so you're ready to cook the moment it's done."},
       { id:'hf006_s2', phase:'prep', timerSec:null,
-        text:'Thinly slice green onions on a diagonal — whites and greens separately if you want; otherwise together. In a medium bowl, whisk 2 tbsp rice vinegar + ½ tsp sugar + ¼ tsp salt. Add the coleslaw mix and toss. Let sit while you cook the beef — it softens slightly and absorbs the dressing.' ,
-        prepNote: '→ this IS the slaw — it sits while beef cooks'},
+        text:'While rice cooks — make the gingery slaw (takes 4 min): thinly slice green onions on a diagonal. In a medium bowl whisk together 1 tbsp rice vinegar + 1 tsp ginger sauce + 1 tsp soy sauce + 1 tbsp sesame oil + 1 tsp sugar + ¼ tsp red pepper flakes. Add the shredded cabbage and ¾ of the green onions. Toss well. The slaw sits and softens slightly — that\'s intentional.' ,
+        prepNote:'→ this IS the slaw that tops the bowl at plating'},
       { id:'hf006_s3', phase:'cook', timerSec:360,
         text:'Heat a 10-inch non-stick skillet over medium-high with ½ tbsp neutral oil. Add the ground beef. Break into small crumbles. Cook undisturbed 2 min for browning, then stir and continue cooking 4 more min until no pink remains and crispy bits form. Drain off excess fat if more than 1 tbsp.' },
       { id:'hf006_s4', phase:'cook', timerSec:90,
@@ -437,8 +440,8 @@ export const SEED_RECIPES = [
         text:'In a small pot, bring 1 cup water + 1 tsp Better Than Bouillon + ½ tbsp butter to a boil. Add bulgur, stir, cover, REMOVE FROM HEAT (do not keep cooking). Let sit 12 min — bulgur absorbs the liquid off-heat. Fluff with fork.' ,
         parallelTask:'While bulgur absorbs: do all the prep work for the chicken and vegetables — you have a full 12 minutes.'},
       { id:'hf009_s2', phase:'prep', timerSec:null,
-        text:'Cut chicken into 1-inch cubes. Core and dice bell pepper into ½-inch pieces. Halve and slice red onion into ½-inch wedges. Finely chop cilantro — about 2 tbsp.' ,
-        prepNote: '→ chicken gets seared (step 3), veg go into the sauce (step 4)'},
+        text:'While bulgur cooks — do all prep now (takes 5 min): cut chicken into 1-inch cubes and pat dry. Core and dice bell pepper into ½-inch pieces. Halve and slice red onion into ½-inch wedges. Mince garlic and chili if using fresh. Everything\'s ready — chicken gets seared first (step 3), then veg go in (step 4).' ,
+        prepNote:'→ chicken seared (step 3), veg go in after (step 4)'},
       { id:'hf009_s3', phase:'cook', timerSec:360,
         text:'Heat a 12-inch non-stick skillet over medium-high with 1 tbsp neutral oil. Pat chicken dry, season with ½ tsp coarse salt + ¼ tsp pepper. Add chicken in single layer (don\'t overcrowd; cook in 2 batches if needed). Sear undisturbed 3 min, then stir and cook 3 more min until golden and just cooked through (internal temp 75°C). Transfer to a plate.',
         airFryerAlt: { text:'Toss cubed chicken with 1 tbsp neutral oil + ½ tsp salt + ¼ tsp pepper. Spread on Cuisinart wire rack in a single layer. AIR FRY at 210°C for 8-10 min, shaking at 5 min, until internal temp reads 75°C. Transfer to a plate.', timerSec:540 } },
@@ -586,8 +589,8 @@ export const SEED_RECIPES = [
         text:'Bring a kettle or pot of water to a boil. Place noodles in a large heatproof bowl. Pour boiling water over to fully submerge. Soak 6-8 minutes (check package — they should be tender but with slight bite). Drain in a colander and rinse with cold water to stop cooking and remove excess starch. Toss with 1 tsp neutral oil to prevent sticking.' ,
         parallelTask:'While noodles cook: prep all ingredients for the sauce/topping so you can toss everything together immediately.'},
       { id:'hf012_s3', phase:'prep', timerSec:null,
-        text:'Shred lettuce (chiffonade by stacking leaves, rolling, then slicing thin). Thinly slice tomato. Roughly chop cilantro. If you didn\'t buy pre-shredded carrot, peel and julienne (cut into matchsticks) or use the large holes of a box grater.' ,
-        prepNote: '→ these go directly into the bowl at plating'},
+        text:'While chicken cooks — prep the bowl garnishes (takes 4 min): shred lettuce (chiffonade: stack leaves, roll tight, slice thin). Thinly slice tomato. Roughly chop cilantro. Julienne carrot into thin matchsticks or use a grater. Slice cucumber if using. These go directly into the bowl at plating — no cooking needed.' ,
+        prepNote:'→ go straight into the bowl at plating (step 5)'},
       { id:'hf012_s4', phase:'cook', timerSec:720,
         text:'Heat a 12-inch non-stick skillet over medium-high with 1 tbsp neutral oil. Remove chicken from marinade (let excess drip off). Add to skillet smooth-side-down. Sear undisturbed 5-6 min until deeply caramelized (the sugar in the marinade browns fast). Flip, cook 5-6 more min until internal temp reads 75°C. Rest on cutting board 5 min, then slice into ½-inch strips against the grain.',
         airFryerAlt: { text:'Place marinated thighs (let excess drip off) on Cuisinart wire rack. AIR FRY at 210°C for 14-18 min, flipping at 8 min. Internal temp should read 75°C. The marinade sugars caramelize beautifully. Rest 5 min, then slice.', timerSec:1080 } },
@@ -632,14 +635,14 @@ export const SEED_RECIPES = [
         pasteAlt: { text:'In a medium saucepan, bring 1¼ cups water + ½ tbsp ginger paste + ¼ tsp salt to a boil. Add rice, stir once, reduce to LOW, cover, cook 15 min. Off heat, rest 5 min covered.', timerSec:900 } ,
         parallelTask:'While rice cooks: do all the prep below (chop veg, slice protein, make sauces). 15 minutes is enough to get everything ready.'},
       { id:'hf013_s2', phase:'prep', timerSec:null,
-        text:'Cut chicken into ¾-inch cubes. Core bell pepper and cut into ½-inch pieces. Slice celery on a diagonal into ½-inch pieces. Slice green onions on a diagonal (keep whites and greens separate — whites for cooking, greens for garnish). Mince garlic. Mince the remaining half of the ginger (about 1 tbsp).' ,
-        prepNote: '→ veg go into the wok (step 5-6), chicken gets velveted (step 3)'},
+        text:'While rice cooks — prep everything now (takes 5 min): cut chicken into ¾-inch cubes. Core bell pepper and cut into ½-inch pieces. Slice celery on a diagonal into ½-inch pieces. Slice green onions, separating whites from greens. Mince garlic and ginger. Set each in its own small pile — you\'ll be adding things quickly once the wok is hot.' ,
+        prepNote:'→ chicken gets velveted (step 3), veg go into the wok (step 6)'},
       { id:'hf013_s3', phase:'prep', timerSec:null,
-        text:'In a medium bowl, toss the cubed chicken with 1 tbsp cornstarch + 1 tbsp soy sauce + 1 tsp neutral oil. Massage to coat every piece. (The cornstarch creates a velvety crust — Chinese restaurant technique called "velveting".)' ,
-        prepNote: '→ chicken goes into the hot wok (step 5)'},
+        text:'Velvet the chicken (while rice still cooks): in a medium bowl toss the cubed chicken with 1 tbsp cornstarch + 1 tbsp soy sauce + 1 tsp neutral oil. Massage to coat every piece. The cornstarch gives it a silky texture. Let sit 5 min minimum — goes directly into the hot wok at step 5.' ,
+        prepNote:'→ goes into the wok at high heat (step 5)'},
       { id:'hf013_s4', phase:'prep', timerSec:null,
-        text:'Whisk the sauce in a small bowl: remaining 2 tbsp soy sauce + 2 tbsp sweet chili + 1 tbsp chili-garlic + 2 tsp sugar + ¼ cup water + 1 tbsp cornstarch (yes, more cornstarch — this thickens the sauce in the pan).' ,
-        prepNote: '→ sauce gets poured into the wok (step 6)'},
+        text:'Make the sauce now so it\'s ready when you need it: in a small bowl whisk remaining 2 tbsp soy sauce + 2 tbsp sweet chili + 1 tbsp chili-garlic + 2 tsp sugar + ¼ cup water + 2 tsp cornstarch. Stir until no lumps. This gets poured into the wok at step 6.' ,
+        prepNote:'→ poured into the wok with the vegetables (step 6)'},
       { id:'hf013_s5', phase:'cook', timerSec:360,
         text:'Heat a wok or large 14-inch skillet over HIGH heat with 2 tbsp neutral oil (peanut or vegetable). When oil is shimmering and ALMOST smoking (this is key for stir-fry), add chicken in a single layer. Don\'t stir for 60 seconds — let it sear. Then stir-fry vigorously 4-5 more minutes until golden and just cooked through. Transfer to a plate.' },
       { id:'hf013_s6', phase:'cook', timerSec:240,

@@ -650,6 +650,11 @@ export function pantryScore(recipe, pantry) {
 
 // Generate the new ingredient object for the chosen substitute
 export function buildSwappedIngredient(ingredient, substituteText) {
+  // Special case: restoring to original (substituteText is the original ingredient name)
+  const isRestoring = ingredient._swappedFrom && substituteText === ingredient._swappedFrom;
+  if (isRestoring) {
+    return { ...ingredient, name: substituteText, _swappedFrom: undefined, _swappedTo: undefined, _isSwapped: false };
+  }
   // Generate a clean ingredient name from the substitute text.
   // "Equal parts: BBQ sauce + soy sauce + a pinch of Chinese five-spice" -> "BBQ sauce + soy sauce sub"
   // We take the first ingredient mentioned (before + or ,) and add "sub" if it's a compound swap.
@@ -680,34 +685,65 @@ export function buildSwappedIngredient(ingredient, substituteText) {
 // Uses smart word-boundary replacement to avoid partial matches.
 export function rewriteStepForSwap(stepText, oldName, newSubstituteText) {
   if (!stepText || !oldName) return stepText;
-  
-  // Build a clean short replacement label for use in step text
-  const isCompound = newSubstituteText.includes('+') || newSubstituteText.toLowerCase().includes('mix');
+
+  // If restoring original (substituteText IS the original name), just do a simple swap back
+  const isCompound = newSubstituteText.includes('+') || newSubstituteText.toLowerCase().startsWith('mix');
   const replacement = isCompound
-    ? '(your substitute)' // compound subs are described in ingredient list, not repeated in steps
+    ? '(your substitute)' // compound subs described in ingredient list
     : newSubstituteText.split('(')[0].split(',')[0].trim().slice(0, 40);
-  
-  // Try progressively shorter matches to find something in the step text.
-  // e.g. "hoisin sauce" → try "hoisin sauce", then "hoisin"
-  const nameParts = oldName.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim().split(/\s+/);
-  
+
+  // Don't rewrite step text for "Skip it" substitutes
+  if (replacement.toLowerCase().startsWith('skip')) return stepText;
+
+  // Build candidates from most-specific to least-specific
+  // e.g. "hoisin sauce" → ["hoisin sauce", "hoisin"]
+  // e.g. "boneless skinless chicken breasts" → ["chicken breasts", "chicken"]
+  const parts = oldName.trim().split(/\s+/);
+  const candidates = [];
+  // Full name
+  candidates.push(oldName.trim());
+  // Skip leading adjectives (boneless, skinless, fresh, dried, etc.)
+  const adjectives = new Set(['boneless','skinless','fresh','dried','frozen','canned','jarred','ground','extra-firm','firm','soft','plain','full-fat','low-fat','large','small','medium','baby','mini','whole']);
+  const contentParts = parts.filter(p => !adjectives.has(p.toLowerCase()));
+  if (contentParts.length < parts.length && contentParts.length > 0) {
+    candidates.push(contentParts.join(' '));
+    candidates.push(contentParts[0]);
+  }
+  // All words except last (for names like "hoisin sauce" → "hoisin")
+  if (parts.length > 1) candidates.push(parts.slice(0, -1).join(' '));
+  // First word only
+  if (parts.length > 1) candidates.push(parts[0]);
+  // Last meaningful word (for "chicken breasts" → "chicken" or "breasts")
+  const lastWord = contentParts[contentParts.length - 1] || parts[parts.length - 1];
+  if (lastWord && lastWord !== parts[0]) candidates.push(lastWord);
+  // Deduplicate
+  const seen = new Set();
+  const unique = candidates.filter(c => {
+    if (!c || c.length < 3 || seen.has(c.toLowerCase())) return false;
+    seen.add(c.toLowerCase());
+    return true;
+  });
+
   let result = stepText;
-  // Try full name first
-  const candidates = [
-    oldName,                              // "hoisin sauce"
-    nameParts[0],                         // "hoisin"  
-    nameParts.slice(0, -1).join(' '),     // drop last word: "hoisin sauce" → "hoisin"
-    nameParts[nameParts.length - 1],      // last word: "sauce"
-  ].filter((c, i, arr) => c && c.length > 2 && arr.indexOf(c) === i); // unique, >2 chars
-  
-  for (const candidate of candidates) {
-    const escaped = candidate.replace(/[-()[\]{}*+?.,\^$|#\s]/g, '\$&');
-    const re = new RegExp('\b' + escaped + '\b', 'gi');
-    if (re.test(result)) {
-      result = result.replace(re, replacement);
-      break; // stop after first successful replacement
+  for (const candidate of unique) {
+    // Escape special regex chars properly
+    const esc = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    try {
+      const re = new RegExp('(?<![a-zA-Z])' + esc + '(?![a-zA-Z])', 'gi');
+      if (re.test(result)) {
+        result = result.replace(new RegExp('(?<![a-zA-Z])' + esc + '(?![a-zA-Z])', 'gi'), replacement);
+        break;
+      }
+    } catch {
+      // lookbehind not supported — fall back to simple replace
+      const simple = new RegExp(esc, 'gi');
+      if (simple.test(result)) {
+        result = result.replace(simple, replacement);
+        break;
+      }
     }
   }
-  
+
   return result;
 }
+
