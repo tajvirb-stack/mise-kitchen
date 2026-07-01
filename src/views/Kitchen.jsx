@@ -2059,6 +2059,10 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
   const [rating, setRating] = useState(0);
   const [autoDeduct, setAutoDeduct] = useState(true);
   const [deductSummary, setDeductSummary] = useState(null);
+  // Guards the one-time cook side-effects (log history, deduct pantry, log macros)
+  // so that clicking "Save & finish" a second time — after the deduction summary
+  // is shown — just closes the dialog instead of re-running everything.
+  const cookCommittedRef = useRef(false);
 
   const eqMode = modes?.equipmentMode || 'oven';
   const ingMode = modes?.ingredientMode || 'fresh';
@@ -2418,7 +2422,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
 
       {/* Done cooking button */}
       <button
-        onClick={() => { setLeftoverServings(0); setShowCookedDialog(true); }}
+        onClick={() => { setLeftoverServings(0); setDeductSummary(null); cookCommittedRef.current = false; setShowCookedDialog(true); }}
         style={{
           marginTop: 24, width: '100%', padding: '16px 24px',
           background: totalChecked === totalSteps ? '#5C7A3A' : '#2A1F1A',
@@ -2502,23 +2506,34 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
               onClick={async () => {
                 setSavingDialog(true);
                 try {
-                  const { data: sess } = await supabase.auth.getSession();
-                  const uid = sess?.session?.user?.id || null;
-                  const totalServings = Math.round(recipe.servings * scale);
-                  if (data?.logCooking) {
-                    await data.logCooking(recipe.id, totalServings, rating || null, leftoverNotes.trim() || null, uid);
-                  }
-                  if (leftoverServings > 0 && data?.addLeftover) {
-                    await data.addLeftover(recipe.id, leftoverServings, leftoverNotes.trim() || null);
-                  }
-                  if (autoDeduct && data) {
-                    const { autoDeductPantry } = await import('../lib/kitchen-ops');
-                    const summary = await autoDeductPantry(recipe, scale, data.pantry, data);
-                    setDeductSummary(summary);
+                  // Run the cook side-effects exactly once. On a second click (after
+                  // the deduction summary is shown) this block is skipped and we fall
+                  // straight through to closing the dialog.
+                  if (!cookCommittedRef.current) {
+                    const { data: sess } = await supabase.auth.getSession();
+                    const uid = sess?.session?.user?.id || null;
+                    const totalServings = Math.round(recipe.servings * scale);
+                    if (data?.logCooking) {
+                      await data.logCooking(recipe.id, totalServings, rating || null, leftoverNotes.trim() || null, uid);
+                    }
+                    if (leftoverServings > 0 && data?.addLeftover) {
+                      await data.addLeftover(recipe.id, leftoverServings, leftoverNotes.trim() || null);
+                    }
+                    // Log macros BEFORE the pantry-summary early return, so a cooked
+                    // meal always counts toward the day's goals (previously this was
+                    // skipped whenever auto-deduct found pantry items to subtract).
+                    if (cookedDialogLogNutrition) {
+                      try { await cookedDialogLogNutrition(recipe, totalServings); } catch {}
+                    }
+                    let summary = [];
+                    if (autoDeduct && data) {
+                      const { autoDeductPantry } = await import('../lib/kitchen-ops');
+                      summary = await autoDeductPantry(recipe, scale, data.pantry, data);
+                      setDeductSummary(summary);
+                    }
+                    cookCommittedRef.current = true;
+                    // Show the "deducted from pantry" summary first; the next click closes.
                     if (summary.length > 0) { setSavingDialog(false); return; }
-                  }
-                  if (cookedDialogLogNutrition) {
-                    try { await cookedDialogLogNutrition(recipe, Math.round(recipe.servings * scale)); } catch {}
                   }
                 } catch (e) { console.error(e); }
                 setSavingDialog(false);
