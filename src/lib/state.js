@@ -86,7 +86,10 @@ export function useHousehold(user) {
     });
     if (e1) { setError(e1.message); return null; }
 
-    // Seed with the 20 HelloFresh recipes
+    // Seed a new household with the full recipe library.
+    // NOTE: keep these fields in sync with the reseed insert in Kitchen.jsx —
+    // dropping the metadata columns here leaves new households with null
+    // nutrition (goal totals read 0) and null meal_type (smart-week planning dead).
     const seed = SEED_RECIPES.map(r => ({
       household_id: hhId,
       title: r.title,
@@ -97,9 +100,18 @@ export function useHousehold(user) {
       image: r.image,
       ingredients: r.ingredients,
       steps: r.steps,
-      created_by: user.id
+      created_by: user.id,
+      meal_type: r.mealType || 'dinner',
+      leftover_friendly: r.leftoverFriendly || false,
+      nutrition: r.nutrition || {},
+      costco_sourcing: r.costcoSourcing || [],
+      no_tomato_note: r.noTomatoNote || null,
+      no_cilantro_note: r.noCilantroNote || null
     }));
-    await supabase.from('recipes').insert(seed);
+    // Insert in chunks to avoid payload limits (43+ full recipe objects).
+    for (let i = 0; i < seed.length; i += 10) {
+      await supabase.from('recipes').insert(seed.slice(i, i + 10));
+    }
 
     await loadHousehold();
     return { id: hhId };
