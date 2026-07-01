@@ -245,14 +245,79 @@ export function aggregateWeeklyIngredients(weekPlan, recipes) {
   return Object.values(map);
 }
 
+// ============================================================================
+// PANTRY MATCHING + UNIT CONVERSION
+// ============================================================================
+
+// Convert a quantity between units of the SAME dimension (volume or mass).
+// Returns null when the units are incompatible (e.g. tsp↔g) or unknown, or
+// between two different count units (clove↔unit) which have no fixed ratio.
+const UNIT_DIMENSION = {
+  tsp: 'v', tbsp: 'v', cup: 'v', ml: 'v', l: 'v',
+  g: 'm', kg: 'm', oz: 'm', lb: 'm',
+};
+const UNIT_TO_BASE = { // volume → ml, mass → g
+  tsp: 4.92892, tbsp: 14.7868, cup: 236.588, ml: 1, l: 1000,
+  g: 1, kg: 1000, oz: 28.3495, lb: 453.592,
+};
+export function convertQty(qty, fromUnit, toUnit) {
+  const f = normalizeUnit(fromUnit), t = normalizeUnit(toUnit);
+  if (f === t) return qty;
+  const df = UNIT_DIMENSION[f], dt = UNIT_DIMENSION[t];
+  if (!df || df !== dt) return null;
+  return qty * UNIT_TO_BASE[f] / UNIT_TO_BASE[t];
+}
+
+// Whole-container units — if you keep an item by the jar/bag/bottle we can't
+// convert to a recipe's tsp/g, but owning one means you're covered.
+const CONTAINER_UNITS = new Set([
+  'unit', 'piece', 'can', 'jar', 'bottle', 'bag', 'box', 'pack', 'package',
+  'bunch', 'head', 'stalk', 'sprig', 'sheet', 'scoop',
+]);
+
+const PANTRY_SYNONYMS = {
+  paste: ['puree', 'purée', 'concentrate'],
+  puree: ['paste', 'purée'],
+  garlic: ['garlic clove', 'clove garlic', 'garlic bulb'],
+  ginger: ['ginger root', 'fresh ginger'],
+  lemongrass: ['lemon grass', 'lemon-grass'],
+};
+
+// Strict-ish name match for pantry: exact folded name, or a known synonym
+// equivalence. Deliberately NOT loose substring — for a grocery list a false
+// "you already have it" (under-buy) is worse than listing an extra item, so we
+// avoid "salt" matching "garlic salt".
+export function pantryNameMatch(a, b) {
+  const na = foldName(a), nb = foldName(b);
+  if (na === nb) return true;
+  for (const [key, syns] of Object.entries(PANTRY_SYNONYMS)) {
+    const aKey = na.includes(key), bKey = nb.includes(key);
+    if (aKey && (bKey || syns.some(s => nb.includes(s)))) return true;
+    if (bKey && (aKey || syns.some(s => na.includes(s)))) return true;
+  }
+  return false;
+}
+
 export function computeGroceryList(weeklyIngredients, pantry) {
   return weeklyIngredients.map(item => {
-    const inPantry = pantry.find(p =>
-      foldName(p.name) === foldName(item.name) && normalizeUnit(p.unit) === item.unit
-    );
-    const have = inPantry ? Number(inPantry.qty) : 0;
-    const need = Math.max(0, item.qty - have);
-    return { ...item, have, need, hasInPantry: !!inPantry };
+    const iUnit = normalizeUnit(item.unit);
+    const match = (pantry || []).find(p => Number(p.qty) > 0 && pantryNameMatch(p.name, item.name));
+    if (!match) return { ...item, have: 0, need: item.qty, hasInPantry: false };
+
+    const pUnit = normalizeUnit(match.unit);
+    const converted = convertQty(Number(match.qty), pUnit, iUnit);
+    if (converted != null) {
+      // Same/compatible units (g↔kg, tsp↔tbsp↔cup, ml↔l) — subtract precisely.
+      const have = converted;
+      return { ...item, have, need: Math.max(0, item.qty - have), hasInPantry: true };
+    }
+    if (CONTAINER_UNITS.has(pUnit)) {
+      // You keep a whole jar/bag of it — assume covered (owned spices drop off).
+      return { ...item, have: item.qty, need: 0, hasInPantry: true, assumedCovered: true };
+    }
+    // Measured but incompatible dimension (e.g. pantry cups vs recipe grams) —
+    // can't compare safely, so list the full amount rather than guess.
+    return { ...item, have: 0, need: item.qty, hasInPantry: true };
   });
 }
 
