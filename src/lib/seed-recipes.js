@@ -76,7 +76,7 @@ export const SEED_RECIPES = [
     mealType: 'dinner',
     leftoverFriendly: true,
     nutrition: { calories: 685, protein: 48, fat: 22, carbs: 72, fiber: 11, sodium: 920 },
-    costcoSourcing: ['Kirkland boneless skinless chicken thighs', 'Kirkland organic chickpeas (can)', 'Kirkland Greek yogurt 2%'],
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland organic chickpeas (can)', 'Kirkland Greek yogurt 2%'],
     title: 'Moroccan-Spiced Chicken with Chickpeas, Zucchini & Peppers',
     servings: 2, timeMin: 35,
     description: 'High Protein. Balanced. A weeknight classic.',
@@ -130,7 +130,7 @@ export const SEED_RECIPES = [
     mealType: 'dinner',
     leftoverFriendly: false,
     nutrition: { calories: 780, protein: 52, fat: 32, carbs: 65, fiber: 7, sodium: 1050 },
-    costcoSourcing: ['Kirkland boneless skinless chicken thighs', 'Kirkland russet potatoes', 'Lime 12-pack'],
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland russet potatoes', 'Lime 12-pack'],
     title: 'Peruvian-Inspired Roasted Chicken & Zesty Lime Rice',
     servings: 2, timeMin: 35,
     description: 'With herby yogurt sauce. High Protein.',
@@ -367,7 +367,7 @@ export const SEED_RECIPES = [
     mealType: 'dinner',
     leftoverFriendly: true,
     nutrition: { calories: 670, protein: 48, fat: 24, carbs: 60, fiber: 6, sodium: 1020 },
-    costcoSourcing: ['Kirkland boneless skinless chicken thighs', 'Kirkland feta block', 'Kirkland Greek yogurt 2%', 'Costco cucumbers'],
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland feta block', 'Kirkland Greek yogurt 2%', 'Costco cucumbers'],
     title: 'Chicken, Feta & Cucumber Gyro Bowls',
     servings: 2, timeMin: 30,
     description: 'With rice and lemon-dill yogurt sauce. High Protein.',
@@ -517,7 +517,7 @@ export const SEED_RECIPES = [
     mealType: 'dinner',
     leftoverFriendly: true,
     nutrition: { calories: 690, protein: 50, fat: 26, carbs: 58, fiber: 7, sodium: 1050 },
-    costcoSourcing: ['Kirkland boneless skinless chicken thighs', 'Kirkland russet potatoes', 'Kirkland organic ranch'],
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland russet potatoes', 'Kirkland organic ranch'],
     title: 'Smoky Dry-Rub Chicken with Wedges & Ranch',
     servings: 2, timeMin: 35,
     description: 'With corn, roasted potato wedges, and ranch dressing. High Protein.',
@@ -553,7 +553,7 @@ export const SEED_RECIPES = [
       { id:'hf011_s7', phase:'plate', timerSec:null,
         text:'Slice chicken on the bias into ½-inch slices. Plate: pile of crispy potato wedges + sliced chicken + corn salsa. Serve ranch in small bowls alongside for dipping or drizzling.' }
     ],
-        prepNote:'→ chicken goes onto the sheet pan (next step)'
+        prepNote:'→ chicken is seared in the oven-safe skillet (step 4)'
   },
 
   // ==========================================================================
@@ -615,7 +615,7 @@ export const SEED_RECIPES = [
     mealType: 'dinner',
     leftoverFriendly: true,
     nutrition: { calories: 715, protein: 48, fat: 26, carbs: 70, fiber: 5, sodium: 1240 },
-    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland jasmine rice', 'Costco bell pepper variety pack', 'Roasted peanuts'],
+    costcoSourcing: ['Kirkland boneless skinless chicken thighs', 'Kirkland jasmine rice', 'Costco bell pepper variety pack', 'Roasted peanuts'],
     title: 'Chinese Kung Pao Chicken with Ginger Rice',
     servings: 2, timeMin: 35,
     description: 'With peppers, celery, peanuts. Spicy.',
@@ -958,7 +958,7 @@ export const SEED_RECIPES = [
     mealType: 'dinner',
     leftoverFriendly: true,
     nutrition: { calories: 700, protein: 50, fat: 24, carbs: 70, fiber: 6, sodium: 980 },
-    costcoSourcing: ['Kirkland boneless skinless chicken thighs', 'Honey', 'Kirkland russet potatoes', 'Costco green beans'],
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Honey', 'Kirkland russet potatoes', 'Costco green beans'],
     title: 'Honey-Glazed Chicken with Roasted Veg',
     servings: 2, timeMin: 40,
     description: 'A weeknight classic — sweet, savory, foolproof.',
@@ -1515,7 +1515,7 @@ export const SEED_RECIPES = [
       { id:'lb003_s4', phase:'plate', timerSec:null,
         text:'Divide couscous and greens between 2 bowls. Top with sliced chicken, diced cucumber, feta, olives. Dollop tzatziki. Squeeze remaining lemon juice over everything.' }
     ],
-        prepNote:'→ chicken goes straight into the skillet (next step)'
+        prepNote:'→ chicken goes into the air fryer (step 2)'
   },
 
   {
@@ -1726,7 +1726,7 @@ export const SEED_RECIPES = [
     ],
     steps: [
       { id:'hf024_s1', phase:'prep', timerSec:null,
-        text:'Set the oven rack to the middle position and preheat the broiler to HIGH. Wash and dry all produce. Core the red bell pepper and cut it into ½-inch (1.5 cm) slices. Halve the sub rolls lengthwise. Pat the steaks very dry with paper towel, then sprinkle both sides with HALF the Italian herb spice blend (about 1½ tsp) plus a pinch of salt and pepper. Set aside.' },
+        text:'Set the oven rack to the middle position and preheat the broiler to HIGH. Wash and dry all produce. Core the red bell pepper and cut it into ½-inch (1.5 cm) slices. Halve the sub rolls lengthwise. Pat the steaks very dry with paper towel, then sprinkle both sides with the full Italian herb spice blend (1 tbsp) plus a pinch of salt and pepper. Set aside.' },
       { id:'hf024_s2', phase:'cook', timerSec:210,
         text:'Heat a large non-stick skillet over medium-high. When hot, add 1 tbsp olive oil, then HALF the sliced peppers. Cook 3-4 min, stirring occasionally, until tender-crisp and lightly blistered. Season with a pinch of salt and pepper, then transfer to a plate. Reserve the other half of the peppers raw for the salad and sandwich.' },
       { id:'hf024_s3', phase:'cook', timerSec:300,
