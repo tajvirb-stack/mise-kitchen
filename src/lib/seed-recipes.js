@@ -334,11 +334,15 @@ export const SEED_RECIPES = [
         alternates: [{ modeId:'paste', qty:2, unit:'tsp', name:'garlic paste' }] },
       { id:'hf007_7', qty:7, unit:'g', name:'fresh parsley (small bunch)' },
       { id:'hf007_8', qty:1, unit:'tbsp', name:'Moroccan spice blend (1 tsp cumin + ½ tsp paprika + ½ tsp coriander + ¼ tsp ginger + ¼ tsp cinnamon + ¼ tsp turmeric)' },
-      { id:'hf007_9', qty:2, unit:'tbsp', name:'tomato paste' }
+      { id:'hf007_9', qty:2, unit:'tbsp', name:'tomato paste' },
+      { id:'hf007_10', qty:0.5, unit:'cup', name:'couscous' }
     ],
     steps: [
       { id:'hf007_s1', phase:'prep', timerSec:null,
         text:'Thinly slice shallot into rings. Mince garlic (or measure paste). Halve zucchini lengthwise, cut into ½-inch half-moons. Core tomato and cut into ½-inch dice. Pick parsley leaves and chop fine — about 2 tbsp.' },
+      { id:'hf007_s1b', phase:'cook', timerSec:null,
+        text:'Make the couscous: in a small pot, bring ¾ cup water + ¼ tsp salt + 1 tsp olive oil to a boil. Stir in ½ cup couscous, cover, remove from heat, and let stand 5 min. Fluff with a fork and set aside.',
+        parallelTask:'This steams off-heat — start it, then build the tagine while it sits.' },
       { id:'hf007_s2', phase:'cook', timerSec:180,
         text:'Heat a 12-inch skillet (with a lid, that fits the salmon flat) over medium with 1 tbsp olive oil. Add shallot, cook 2 min until softened. Add minced garlic + 1 tbsp Moroccan spice blend. Stir constantly for 45 seconds until fragrant — don\'t let the spices burn.',
         pasteAlt: { text:'Heat a 12-inch skillet with a lid over medium with 1 tbsp olive oil. Add shallot, cook 2 min until softened. Add 2 tsp garlic paste + 1 tbsp Moroccan spice. Stir constantly 20-30 seconds — paste burns very fast.', timerSec:150 } },
@@ -350,7 +354,7 @@ export const SEED_RECIPES = [
         text:'Pat salmon very dry. Season with ½ tsp coarse salt + ¼ tsp pepper. Nestle salmon SKIN-SIDE-DOWN into the simmering tagine, pushing it down so the liquid comes ⅔ up the sides of the fillet. Cover. Reduce heat to medium-low. Cook 6-8 min — salmon is done when it flakes easily and internal temp reads 50°C (medium) or 65°C (well done). Don\'t flip; the steam under the lid cooks the top.' ,
         parallelTask:'While it simmers: chop garnishes, slice cooked items, set out serving plates.'},
       { id:'hf007_s6', phase:'plate', timerSec:null,
-        text:'Divide tagine between 2 shallow bowls, salmon on top. Sprinkle generously with chopped parsley. Serve with crusty bread to soak up the sauce.' }
+        text:'Spoon the fluffed couscous into 2 shallow bowls. Divide the tagine over it, salmon on top. Sprinkle generously with chopped parsley.' }
     ],
         prepNote:'→ these aromatics go into the poaching liquid (step 2)'
   },
@@ -416,9 +420,8 @@ export const SEED_RECIPES = [
     mealType: 'dinner',
     leftoverFriendly: true,
     nutrition: { calories: 720, protein: 46, fat: 22, carbs: 78, fiber: 7, sodium: 980 },
-    costcoSourcing: ['Kirkland boneless skinless chicken thighs', 'Kirkland basmati rice', 'Kirkland canned coconut milk', 'Patak\'s vindaloo paste'],
-    noTomatoNote: 'HF version uses tomato base. Substitute with full-fat coconut milk + 1 tbsp tamarind paste for the same body and tang.',
-    title: 'Indian Spiced Chicken Vindaloo with Bulgur',
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland bulgur wheat', 'Kirkland heavy cream', 'Kirkland organic baby spinach'],
+    title: 'Creamy Chicken Tikka with Bulgur & Spinach',
     servings: 2, timeMin: 35,
     description: 'High Protein. Restaurant-style at home.',
     tags: ['chicken','indian','high-protein'],
@@ -456,7 +459,7 @@ export const SEED_RECIPES = [
       { id:'hf009_s6', phase:'cook', timerSec:120,
         text:'Return chicken to skillet (with any accumulated juices). Add the baby spinach. Stir until spinach wilts — about 90 seconds. Taste and adjust with salt (¼ tsp at a time).' },
       { id:'hf009_s7', phase:'plate', timerSec:null,
-        text:'Divide bulgur between 2 bowls. Spoon vindaloo over the top. Sprinkle generously with chopped cilantro.' }
+        text:'Divide bulgur between 2 bowls. Spoon the creamy tikka over the top. Sprinkle generously with chopped cilantro.' }
     ]
   },
 
@@ -469,7 +472,6 @@ export const SEED_RECIPES = [
     leftoverFriendly: true,
     nutrition: { calories: 650, protein: 44, fat: 22, carbs: 65, fiber: 11, sodium: 940 },
     costcoSourcing: ['Kirkland extra lean ground turkey', 'Kirkland russet potatoes', 'Costco canned white beans', 'Costco canned green chiles'],
-    noTomatoNote: 'HF version uses tomato base. Build as a white chili: ground turkey, white beans, green chiles, cumin, lime, garlic.',
     title: 'Turkey Chili & Roasted Potato Hash Bowls',
     servings: 2, timeMin: 35,
     description: 'With sour cream and bell peppers. Family Friendly. High Protein.',
@@ -484,7 +486,9 @@ export const SEED_RECIPES = [
       { id:'hf010_6', qty:3, unit:'tbsp', name:'sour cream' },
       { id:'hf010_7', qty:0.5, unit:'cup', name:'sharp cheddar, shredded' },
       { id:'hf010_8', qty:1, unit:'tbsp', name:'Tex-Mex paste (1 tbsp tomato paste + 1 tsp chipotle in adobo + ½ tsp smoked paprika + ¼ tsp cocoa powder + ¼ tsp cumin)' },
-      { id:'hf010_9', qty:2, unit:'tbsp', name:'tomato paste' }
+      { id:'hf010_9', qty:2, unit:'tbsp', name:'tomato paste' },
+      { id:'hf010_10', qty:1, unit:'unit', name:'can white beans (14 oz / 398 ml), drained and rinsed' },
+      { id:'hf010_11', qty:1, unit:'unit', name:'can diced green chiles (4 oz / 127 ml)' }
     ],
     steps: [
       { id:'hf010_s1', phase:'cook', timerSec:1500,
@@ -497,7 +501,7 @@ export const SEED_RECIPES = [
       { id:'hf010_s3', phase:'cook', timerSec:360,
         text:'Heat a 10-inch non-stick skillet over medium-high with 1 tbsp neutral oil. Add ground turkey, break into small pieces. Cook undisturbed 2 min, then stir and continue 4 min until no pink remains. Season with ½ tsp salt + ¼ tsp pepper.' },
       { id:'hf010_s4', phase:'cook', timerSec:420,
-        text:'Add the diced bell pepper, cook 2 min until softened. Add the Tex-Mex paste + 2 tbsp tomato paste. Stir constantly 60 seconds until darkened. Add ⅓ cup water. Simmer 4-5 min until thickened to a chili-like consistency.' },
+        text:'Add the diced bell pepper, cook 2 min until softened. Add the Tex-Mex paste + 2 tbsp tomato paste. Stir constantly 60 seconds until darkened. Add the drained white beans, the green chiles, and ⅓ cup water. Simmer 4-5 min, mashing a few beans against the pan to thicken, until it reaches a chili-like consistency.' },
       { id:'hf010_s5', phase:'cook', timerSec:null,
         text:'Stir the roasted potatoes into the chili. The potatoes will absorb some sauce — that\'s good.' },
       { id:'hf010_s6', phase:'plate', timerSec:null,
