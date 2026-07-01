@@ -1550,6 +1550,379 @@ export const SEED_RECIPES = [
         text:'In a bowl: rice as base, then arrange salmon, edamame, cucumber, avocado in sections like a chirashi bowl. Drizzle spicy mayo across. Top with sesame seeds, scallions, and crumbled nori.' }
     ],
         prepNote:'→ spicy mayo drizzled over the finished bowl'
+  },
+
+  // ==========================================================================
+  // 21. Gochujang-Sauced Turkey Noodles  (from HelloFresh card, recreated)
+  // ==========================================================================
+  {
+    id: 'hf_021',
+    mealType: 'dinner',
+    leftoverFriendly: true,
+    nutrition: { calories: 640, protein: 40, fat: 19, carbs: 78, fiber: 6, sodium: 1150 },
+    costcoSourcing: ['Kirkland ground turkey', 'Kirkland organic linguine/pasta', 'Kirkland whole carrots', 'gochujang (Costco Korean aisle tub)'],
+    title: 'Gochujang-Sauced Turkey Noodles with Sesame, Carrots & Snow Peas',
+    servings: 2, timeMin: 20,
+    description: 'High Protein. Spicy. A fast Korean-inspired weeknight noodle bowl.',
+    tags: ['turkey','korean','high-protein','spicy','noodles'],
+    image: '🍜',
+    ingredients: [
+      { id:'hf021_1', qty:250, unit:'g', name:'ground turkey', protein:true },
+      { id:'hf021_2', qty:170, unit:'g', name:'linguine' },
+      { id:'hf021_3', qty:56, unit:'g', name:'carrot, julienned (buy whole, cut matchsticks)' },
+      { id:'hf021_4', qty:56, unit:'g', name:'baby spinach' },
+      { id:'hf021_5', qty:56, unit:'g', name:'snow peas' },
+      { id:'hf021_6', qty:2, unit:'clove', name:'garlic', alternates: [{ modeId:'paste', qty:2, unit:'tsp', name:'garlic paste' }] },
+      { id:'hf021_7', qty:0.25, unit:'cup', name:'vegetarian oyster sauce' },
+      { id:'hf021_8', qty:2, unit:'tbsp', name:'sweet chili sauce' },
+      { id:'hf021_9', qty:2, unit:'tbsp', name:'gochujang' },
+      { id:'hf021_10', qty:1, unit:'tbsp', name:'toasted sesame oil' },
+      { id:'hf021_11', qty:7, unit:'g', name:'black sesame seeds' }
+    ],
+    steps: [
+      { id:'hf021_s1', phase:'prep', timerSec:null,
+        text:'Bring a large pot of well-salted water to a boil over high heat. Wash and dry all produce. Peel, then mince or grate 2 garlic cloves. Trim the snow peas and halve them on an angle. In a medium bowl, stir together ¼ cup vegetarian oyster sauce, 2 tbsp sweet chili sauce, 2 tbsp gochujang and 1 tbsp toasted sesame oil until smooth — this is your sauce.' },
+      { id:'hf021_s2', phase:'cook', timerSec:660,
+        text:'Add the linguine to the boiling water and cook 10-13 min, until tender but still firm to the bite. Scoop out and reserve ¼ cup of the starchy pasta water, then strain the linguine and return it to the pot off the heat.',
+        parallelTask:'While the noodles boil: heat your pan and cook the veggies (next step).' },
+      { id:'hf021_s3', phase:'cook', timerSec:180,
+        text:'Heat a large non-stick pan over medium-high. When hot, add ½ tbsp oil, the carrot matchsticks and the halved snow peas. Season with a pinch of salt and pepper. Cook 2-4 min, stirring often, until tender-crisp and bright. Transfer the veggies to a plate and keep the pan.' },
+      { id:'hf021_s4', phase:'cook', timerSec:270,
+        text:'Return the same pan to medium-high and add 1 tbsp oil. Add the ground turkey and the minced garlic, season with salt and pepper, and cook 4-5 min, breaking the turkey into small crumbles, until no pink remains and it reaches 74°C (165°F). Stir the cooked veggies and the sauce mixture back in and cook 1-2 min, stirring often, until everything is glossy and warmed through.',
+        pasteAlt: { text:'If using garlic paste: add the turkey first and brown it ~3 min, then stir in the 2 tsp garlic paste for the final 30-45 seconds — paste scorches faster than fresh mince. Cook turkey to 74°C (165°F) before adding the veggies and sauce.', timerSec:255 } },
+      { id:'hf021_s5', phase:'plate', timerSec:60,
+        text:'Transfer the turkey-veggie mixture into the pot with the noodles and add the baby spinach. Toss over low heat about 1 min, until the spinach just wilts and the noodles are evenly coated. Season with salt and pepper. For a looser, silkier sauce, splash in the reserved pasta water 1-2 tbsp at a time. Divide between two bowls and sprinkle black sesame seeds over top.' }
+    ],
+    prepNote:'Protein swaps (from the card): use 250g ground beef in place of turkey, cooked the same way to 74°C (165°F); or 1 block tofu — pat dry, crumble into pea-sized pieces, and cook in 1 tbsp oil with the garlic 6-7 min until browned all over, then continue as written.'
+  },
+
+  // ==========================================================================
+  // 22. Grilled Jerk Pork Chops with Kiwi Salsa & Rice  (recreated)
+  // ==========================================================================
+  {
+    id: 'hf_022',
+    mealType: 'dinner',
+    leftoverFriendly: true,
+    nutrition: { calories: 710, protein: 42, fat: 26, carbs: 74, fiber: 5, sodium: 880 },
+    costcoSourcing: ['Kirkland boneless pork chops', 'Kirkland parboiled/basmati rice', 'Kirkland mayonnaise', 'Kirkland frozen corn kernels'],
+    title: 'Grilled Jerk Pork Chops with Tropical Kiwi Salsa, Lime Mayo & Rice',
+    servings: 2, timeMin: 30,
+    description: 'Spicy. Grill night. Sweet-heat jerk pork over Caribbean spiced corn rice with a fresh kiwi-lime salsa.',
+    tags: ['pork','caribbean','jerk','spicy','grill','high-protein'],
+    image: '🌶️',
+    ingredients: [
+      { id:'hf022_1', qty:340, unit:'g', name:'boneless pork chops', protein:true },
+      { id:'hf022_2', qty:0.75, unit:'cup', name:'parboiled rice' },
+      { id:'hf022_3', qty:113, unit:'g', name:'corn kernels' },
+      { id:'hf022_4', qty:1, unit:'unit', name:'sweet bell pepper' },
+      { id:'hf022_5', qty:1, unit:'unit', name:'kiwi' },
+      { id:'hf022_6', qty:2, unit:'stalk', name:'green onion' },
+      { id:'hf022_7', qty:1, unit:'unit', name:'lime' },
+      { id:'hf022_8', qty:2, unit:'tbsp', name:'mayonnaise' },
+      { id:'hf022_9', qty:1, unit:'tbsp', name:'butter' },
+      { id:'hf022_10', qty:6, unit:'g', name:'Caribbean/jerk spice blend (1 tsp ground allspice + ½ tsp dried thyme + ¼ tsp cinnamon + ¼ tsp nutmeg + ¼ tsp cayenne + ¼ tsp garlic powder + ¼ tsp onion powder + ¼ tsp brown sugar + ¼ tsp black pepper)' },
+      { id:'hf022_11', qty:2, unit:'tbsp', name:'jerk sauce (1 tbsp soy + 1 tbsp brown sugar + 1 tsp lime juice + 1 tsp neutral oil + ½ tsp ground allspice + ¼ tsp dried thyme + ¼ tsp cayenne + ¼ tsp garlic powder)' }
+    ],
+    steps: [
+      { id:'hf022_s1', phase:'prep', timerSec:null,
+        text:'Lightly oil the grill grates and preheat the grill to medium (~200°C/400°F). Wash and dry all produce. Rinse ¾ cup rice in a strainer until the water runs clear.' },
+      { id:'hf022_s2', phase:'cook', timerSec:1080,
+        text:'In a medium pot, bring 1¼ cups (300 ml) water and ⅛ tsp salt to a boil over high. Stir in the rinsed rice, 113 g corn, 1 tbsp butter and half the Caribbean spice blend (~1 tsp). Reduce heat to low, cover, and cook 18–20 min until rice is tender and water is absorbed. Remove from heat, fluff with a fork, and keep covered.',
+        parallelTask:'While the rice cooks: marinate the pork and prep the salsa ingredients.' },
+      { id:'hf022_s3', phase:'prep', timerSec:null,
+        text:'Pat the 340 g pork chops dry with paper towels and season all over with the remaining Caribbean spice blend (~1 tsp), salt and pepper. In a medium bowl, toss the pork with half the jerk sauce (1 tbsp) to coat. Set aside to marinate.',
+        prepNote:'→ goes onto the hot grill (step 6); reserve the other half of the jerk sauce for basting' },
+      { id:'hf022_s4', phase:'prep', timerSec:null,
+        text:'Core and cut the bell pepper into quarters; on a plate, drizzle with ½ tbsp oil and season with salt and pepper, tossing to coat. Peel and cut the kiwi into ¼-inch pieces. Thinly slice the green onions. Zest, then juice half the lime; cut the remaining half into wedges.' },
+      { id:'hf022_s5', phase:'prep', timerSec:null,
+        text:'In a medium bowl, combine the kiwi, half the green onions, half the lime zest, half the lime juice and ½ tbsp oil; season with salt and pepper and toss. In a small bowl, stir together the 2 tbsp mayonnaise, the remaining lime zest and remaining lime juice to make the lime mayo.' },
+      { id:'hf022_s6', phase:'cook', timerSec:420,
+        text:'Grill the peppers on one side of the grate, lid closed, 3–4 min per side until grill-marked and tender; transfer to a plate. Meanwhile, grill the marinated pork on the other side, lid closed, 4–6 min per side, basting with the remaining jerk sauce during the last minute of each side. Cook until the internal temperature reaches 71°C/160°F. Transfer pork to a clean plate to rest.',
+        airFryerAlt: { text:'No grill? Set Cuisinart air fryer to AIR FRY at 190°C (grill was ~200°C, drop -10°C), middle rack. Cook peppers ~6 min until charred; cook pork ~9–11 min total, flipping halfway and brushing with reserved jerk sauce, until 71°C/160°F internal.', timerSec:360 },
+        parallelTask:'While the grill works: have the salsa bowl and lime mayo ready for plating.' },
+      { id:'hf022_s7', phase:'plate', timerSec:null,
+        text:'Cut the grilled peppers into ¼-inch pieces and toss into the kiwi salsa. Slice the rested pork. Divide the corn rice, kiwi salsa and pork between two plates. Drizzle with the lime mayo, sprinkle with the remaining green onions, and squeeze a lime wedge over top.' }
+    ],
+    prepNote:'Protein swap (from card): substitute 2 chicken breasts for the pork — season and marinate the same way, and grill 6–8 min per side to an internal temp of 74°C/165°F.'
+  },
+
+  // ==========================================================================
+  // 23. Chutney-Glazed Chicken & Sticky Rice Bowls  (recreated)
+  // ==========================================================================
+  {
+    id: 'hf_023',
+    mealType: 'dinner',
+    leftoverFriendly: true,
+    nutrition: { calories: 620, protein: 46, fat: 11, carbs: 82, fiber: 4, sodium: 640 },
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland jasmine/sticky rice', 'fresh mango (Costco produce)', 'Kirkland black sesame seeds'],
+    title: 'Chutney-Glazed Chicken & Sticky Rice Bowls with Purple Cabbage, Mango & Cucumber',
+    servings: 2, timeMin: 30,
+    description: 'High Protein. Rainbow Plates. Family friendly weeknight bowl.',
+    tags: ['chicken','asian','high-protein','rainbow','family-friendly','rice-bowl'],
+    image: '🍚',
+    ingredients: [
+      { id:'hf023_1', qty:2, unit:'unit', name:'boneless skinless chicken breasts (~170g each)', protein:true },
+      { id:'hf023_2', qty:0.75, unit:'cup', name:'sticky (or jasmine) rice' },
+      { id:'hf023_3', qty:2, unit:'tbsp', name:'mango chutney (2 tbsp mango, finely diced/mashed + 1 tsp sugar + 1 tsp rice vinegar + ¼ tsp grated ginger + pinch chili flakes + pinch salt, simmered to jammy)' },
+      { id:'hf023_4', qty:1, unit:'unit', name:'mango, sliced (buy whole, peel/pit and cut ¼-inch slices)' },
+      { id:'hf023_5', qty:1, unit:'unit', name:'mini cucumber, half-mooned (buy whole, halve and cut ¼-inch)' },
+      { id:'hf023_6', qty:56, unit:'g', name:'red cabbage, shredded (buy whole wedge, shred thin)' },
+      { id:'hf023_7', qty:1, unit:'tbsp', name:'seasoned rice vinegar' },
+      { id:'hf023_8', qty:0.5, unit:'tbsp', name:'sugar' },
+      { id:'hf023_9', qty:3.5, unit:'g', name:'black sesame seeds (~1 tsp)' },
+      { id:'hf023_10', qty:1.5, unit:'tbsp', name:'neutral oil (for chicken, cabbage & serving)' },
+      { id:'hf023_11', qty:0.125, unit:'tsp', name:'salt (for rice)' }
+    ],
+    steps: [
+      { id:'hf023_s1', phase:'prep', timerSec:null,
+        text:'Preheat oven to 230°C (450°F) with a rack in the middle position. Wash and dry all produce. Rinse 0.75 cup rice in a strainer under cold water until the water runs clear.' },
+      { id:'hf023_s2', phase:'cook', timerSec:840,
+        text:'In a medium pot, bring 1¼ cups water and ⅛ tsp salt to a boil over high. Add the rinsed rice, stir, cover, and reduce heat to low. Cook 13-15 min until rice is tender and water is absorbed. Remove from heat and leave covered to steam.',
+        parallelTask:'While the rice cooks: toast the sesame seeds (step 3), prep the produce (step 5) and mix the sweet vinegar (step 5).' },
+      { id:'hf023_s3', phase:'cook', timerSec:210,
+        text:'Meanwhile, heat a large dry non-stick pan over medium. When hot, add the black sesame seeds and toast 3-4 min, stirring often, until fragrant — watch closely so they do not burn. Transfer to a plate and set aside.' },
+      { id:'hf023_s4', phase:'cook', timerSec:480,
+        text:'Line a baking sheet with parchment. Pat the chicken dry and season both sides with salt and pepper. Heat 1 tbsp oil in an oven-safe or non-stick skillet over medium-high. Sear chicken 1-2 min per side until golden (do not crowd; work in 2 batches if needed). Transfer to the baking sheet and roast in the middle of the oven 7-9 min. Spread the mango chutney over the top and return to the oven 2-3 min until the chutney thickens slightly and the chicken reaches 75°C (165°F) internal. Rest 3 min before slicing.',
+        airFryerAlt: { text:'After searing, set Cuisinart air fryer to AIR FRY at 220°C (oven was 230°C, drop -10°C), middle rack. Cook chicken 6-7 min, add the chutney, then cook 2 min more until glazed and 75°C (165°F) internal.', timerSec:420 },
+        parallelTask:'While the chicken roasts: marinate the cabbage (step 6) and finish plating prep.' },
+      { id:'hf023_s5', phase:'prep', timerSec:null,
+        text:'Peel, pit and cut the mango into ¼-inch slices. Halve the cucumber and cut into ¼-inch half-moons. In a small bowl, whisk 1 tbsp seasoned rice vinegar, ½ tbsp sugar, and ½ tbsp warm water with a pinch of salt until dissolved — this is your sweet vinegar mixture.' },
+      { id:'hf023_s6', phase:'prep', timerSec:null,
+        text:'In a medium bowl, toss the shredded red cabbage with 1 tsp oil and a pinch of salt. Massage with your hands 1-2 min until softened and glossy. Set aside.' },
+      { id:'hf023_s7', phase:'plate', timerSec:null,
+        text:'Fluff the rice and stir in half the sweet vinegar mixture and half the toasted sesame seeds. Divide rice between two bowls. Slice the rested chicken and set on one side of each bowl. Arrange mango, cucumber and cabbage around the rice. Drizzle the veggies with the remaining sweet vinegar mixture and sprinkle everything with the remaining toasted sesame seeds.' }
+    ],
+    prepNote:'Protein swap: sub firm tofu (press & sear) or salmon fillet (roast skin-side down to 52°C/125°F for medium) for the chicken; chutney-glaze the same way.'
+  },
+
+  // ==========================================================================
+  // 24. Cheesy Italian Steak Sandwiches  (recreated)
+  // ==========================================================================
+  {
+    id: 'hf_024',
+    mealType: 'dinner',
+    leftoverFriendly: false,
+    nutrition: { calories: 660, protein: 44, fat: 30, carbs: 48, fiber: 4, sodium: 940 },
+    costcoSourcing: ['Kirkland beef top sirloin steak', 'Kirkland shredded cheddar cheese', 'Kirkland artisan rolls / demi-baguettes', 'Kirkland organic spring mix'],
+    title: 'Cheesy Italian Steak Sandwiches with Balsamic-Dressed Salad',
+    servings: 2, timeMin: 20,
+    description: 'High Protein. Seared Italian-herb sirloin, blistered peppers and melty cheddar on a broiled roll, with a balsamic spring-mix salad.',
+    tags: ['beef','steak','italian','sandwich','high-protein'],
+    image: '🥪',
+    ingredients: [
+      { id:'hf024_1', qty:2, unit:'unit', name:'sirloin steaks (~140g each)', protein:true },
+      { id:'hf024_2', qty:1, unit:'unit', name:'red bell pepper, cut into ½-inch slices (buy whole, core and slice yourself)' },
+      { id:'hf024_3', qty:2, unit:'unit', name:'sub rolls / demi-baguettes' },
+      { id:'hf024_4', qty:1, unit:'tbsp', name:'Italian herb spice blend (1 tsp oregano + 1 tsp basil + ½ tsp thyme + ¼ tsp rosemary + ¼ tsp garlic powder)' },
+      { id:'hf024_5', qty:2, unit:'tbsp', name:'balsamic glaze' },
+      { id:'hf024_6', qty:50, unit:'g', name:'shredded cheddar cheese (~½ cup)' },
+      { id:'hf024_7', qty:60, unit:'g', name:'spring mix (~2 cups)' },
+      { id:'hf024_8', qty:2.5, unit:'tbsp', name:'olive oil' },
+      { id:'hf024_9', qty:1, unit:'pinch', name:'salt and black pepper, to taste' }
+    ],
+    steps: [
+      { id:'hf024_s1', phase:'prep', timerSec:null,
+        text:'Set the oven rack to the middle position and preheat the broiler to HIGH. Wash and dry all produce. Core the red bell pepper and cut it into ½-inch (1.5 cm) slices. Halve the sub rolls lengthwise. Pat the steaks very dry with paper towel, then sprinkle both sides with HALF the Italian herb spice blend (about 1½ tsp) plus a pinch of salt and pepper. Set aside.' },
+      { id:'hf024_s2', phase:'cook', timerSec:210,
+        text:'Heat a large non-stick skillet over medium-high. When hot, add 1 tbsp olive oil, then HALF the sliced peppers. Cook 3-4 min, stirring occasionally, until tender-crisp and lightly blistered. Season with a pinch of salt and pepper, then transfer to a plate. Reserve the other half of the peppers raw for the salad and sandwich.' },
+      { id:'hf024_s3', phase:'cook', timerSec:300,
+        text:'Return the same skillet to medium-high and add ½ tbsp olive oil. Add the seasoned steaks and sear 1-2 min per side until a golden crust forms. Remove the pan from heat and transfer the steaks to a foil-lined baking sheet. Broil in the middle of the oven 4-7 min until cooked to your liking (internal temp 63°C/145°F for medium-rare; steak thickness affects timing). Transfer to a plate and rest 2-3 min so juices redistribute.',
+        airFryerAlt: { text:'After searing, place steaks in the Cuisinart air fryer basket. Set AIR FRY mode at 220°C and cook 4-6 min, checking early, until internal temp reads 63°C/145°F for medium-rare. Rest 2-3 min.', timerSec:300 },
+        parallelTask:'While the steaks broil and rest: make the dressing and cut the remaining peppers (next step).' },
+      { id:'hf024_s4', phase:'prep', timerSec:null,
+        text:'Meanwhile, in a large bowl whisk together HALF the balsamic glaze (1 tbsp) and 1 tbsp olive oil until emulsified. Cut the reserved raw peppers into ½-inch (1.5 cm) pieces.' },
+      { id:'hf024_s5', phase:'cook', timerSec:90,
+        text:'Thinly slice the rested steaks against the grain. Remove the foil from the baking sheet, then arrange the halved rolls cut-sides up directly on the sheet. Stack sliced steak on the bottom rolls and drizzle with the remaining balsamic glaze (1 tbsp). Pile the cooked peppers on the top rolls, then sprinkle the cheddar over the peppers. Broil in the middle of the oven 1-2 min, watching closely, until the cheese is fully melted (do not let the rolls burn).',
+        airFryerAlt: { text:'Set the Cuisinart to AIR FRY at 190°C and cook the open-faced rolls 1-2 min, checking often, until the cheddar melts and the roll edges are golden.', timerSec:90 } },
+      { id:'hf024_s6', phase:'plate', timerSec:null,
+        text:'To the bowl with the dressing, add the spring mix and the raw diced peppers. Season with salt and pepper and toss to coat. Once the cheese is melted, close the sandwiches (cheesy top over the steak bottom). Divide the sandwiches and salad between two plates and serve.' }
+    ],
+    prepNote:'Steak swaps (cook exactly as written for sirloin): striploin, double striploin, ribeye, or tenderloin steak.'
+  },
+
+  // ==========================================================================
+  // 25. Cheesy Italian Herb Chicken Bake with Saucy Linguine  (recreated)
+  // ==========================================================================
+  {
+    id: 'hf_025',
+    mealType: 'dinner',
+    leftoverFriendly: true,
+    nutrition: { calories: 720, protein: 55, fat: 24, carbs: 68, fiber: 6, sodium: 780 },
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland shredded mozzarella', 'Kirkland canned crushed tomatoes', 'Garofalo linguine (Costco)'],
+    title: 'Cheesy Italian Herb Chicken Bake with Saucy Linguine',
+    servings: 2, timeMin: 30,
+    description: 'High Protein. Comfort Italian. Seared chicken baked under a garlicky mozzarella-cream cheese crown over a saucy tomato linguine.',
+    tags: ['chicken','italian','high-protein','comfort','pasta'],
+    image: '🍝',
+    ingredients: [
+      { id:'hf025_1', qty:2, unit:'unit', name:'boneless skinless chicken breasts (~170g each)', protein:true },
+      { id:'hf025_2', qty:1, unit:'can', name:'crushed tomatoes with garlic & onion (1 can/398ml crushed tomatoes + ½ tsp garlic powder + ½ tsp onion powder + pinch salt)' },
+      { id:'hf025_3', qty:5, unit:'g', name:'Italian herb spice blend (1 tsp dried oregano + ½ tsp dried basil + ½ tsp dried thyme + ¼ tsp dried rosemary + ¼ tsp garlic powder)' },
+      { id:'hf025_4', qty:170, unit:'g', name:'linguine' },
+      { id:'hf025_5', qty:0.75, unit:'cup', name:'mozzarella cheese, shredded' },
+      { id:'hf025_6', qty:2, unit:'tbsp', name:'cream cheese (~28g)' },
+      { id:'hf025_7', qty:1, unit:'clove', name:'garlic', alternates: [{ modeId:'paste', qty:1, unit:'tsp', name:'garlic paste' }] },
+      { id:'hf025_8', qty:56, unit:'g', name:'baby spinach' },
+      { id:'hf025_9', qty:7, unit:'g', name:'parsley, finely chopped (buy fresh bunch)' }
+    ],
+    steps: [
+      { id:'hf025_s1', phase:'prep', timerSec:null,
+        text:'Preheat oven to 205°C (400°F) with a rack in the middle position. Bring a large pot of well-salted water to a boil. Wash and dry all produce. Roughly chop the spinach, peel and mince (or grate) the garlic, and finely chop the parsley.' },
+      { id:'hf025_s2', phase:'cook', timerSec:660,
+        text:'Add the linguine to the boiling water and cook 10-13 min, until tender but still firm to the bite. Reserve ½ cup (about 120ml) of the starchy pasta water, then strain the linguine and return it to the pot off the heat. Toss with 1 tbsp olive oil to keep it from sticking.',
+        parallelTask:'While the pasta boils: make the cheese mixture (next step) and get your chicken seasoned and ready to sear.' },
+      { id:'hf025_s3', phase:'prep', timerSec:null,
+        text:'In a medium bowl, combine 2 tbsp cream cheese, the ¾ cup shredded mozzarella, and the minced garlic. Season with a pinch of salt and pepper and stir until well blended into a thick, spoonable paste.',
+        pasteAlt: { text:'If using garlic paste, stir 1 tsp garlic paste into the cheese mixture instead of minced garlic — it disperses more evenly and there is no raw-garlic bite once baked.', timerSec:null } },
+      { id:'hf025_s4', phase:'cook', timerSec:240,
+        text:'Heat a large OVEN-SAFE non-stick pan over medium. Pat the chicken breasts very dry and season both sides with salt, pepper, and the full Italian herb spice blend. When the pan is hot, add 1 tbsp oil, then the chicken. Sear undisturbed 1-2 min per side until golden (it will not be cooked through yet). Pour the seasoned crushed tomatoes around the chicken, then spoon the cheese mixture on top of each breast.' },
+      { id:'hf025_s5', phase:'cook', timerSec:660,
+        text:'Transfer the whole pan to the middle of the oven and bake 10-12 min, until the cheese is bubbly-golden and the chicken reaches an internal temperature of 75°C (165°F) at the thickest part.',
+        airFryerAlt: { text:'Set Cuisinart Convection air fryer to AIR FRY at 195°C (oven was 205°C, drop -10°C), middle rack. Air fry the pan 9-10 min (about -15% time), until cheese is browned and chicken hits 75°C (165°F).', timerSec:560 },
+        parallelTask:'While the chicken bakes: keep the reserved pasta water and chopped spinach within reach for the sauce.' },
+      { id:'hf025_s6', phase:'plate', timerSec:null,
+        text:'Once the chicken is cooked through, transfer the breasts to a plate. Set the pan of tomato sauce over medium heat and stir in ½ tbsp sugar, ¼ cup (about 60ml) reserved pasta water, the chopped spinach, and the cooked linguine. Season with salt and pepper and toss 1-2 min until the spinach wilts and the sauce clings. Divide the saucy linguine and chicken between two plates and sprinkle parsley over the chicken.' }
+    ],
+    prepNote:'→ reserve ½ cup pasta water before draining (step 2); it loosens the tomato sauce in the final toss'
+  },
+
+  // ==========================================================================
+  // 26. Za'atar-Spiced Chicken with Basil Pesto & Couscous  (recreated)
+  // ==========================================================================
+  {
+    id: 'hf_026',
+    mealType: 'dinner',
+    leftoverFriendly: true,
+    nutrition: { calories: 735, protein: 47, fat: 36, carbs: 53, fiber: 6, sodium: 980 },
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland sliced almonds', 'Kirkland extra virgin olive oil', 'Kirkland real mayonnaise'],
+    title: 'Za\'atar-Spiced Chicken with Roasted Peppers, Basil Pesto & Couscous',
+    servings: 2, timeMin: 25,
+    description: 'High Protein. Balanced. A fast weeknight bowl with crisp broiled peppers, za\'atar chicken and fluffy couscous.',
+    tags: ['chicken','middle-eastern','high-protein','balanced'],
+    image: '🍗',
+    ingredients: [
+      { id:'hf026_1', qty:340, unit:'g', name:'boneless skinless chicken breast, cut into 1-inch pieces', protein:true },
+      { id:'hf026_2', qty:2, unit:'tsp', name:'za\'atar spice blend (1 tsp dried thyme + 1 tsp sumac + 1 tsp toasted sesame seeds + ½ tsp dried oregano + ¼ tsp salt)' },
+      { id:'hf026_3', qty:0.25, unit:'cup', name:'basil pesto (¼ cup packed basil + 2 tbsp olive oil + 2 tbsp grated parmesan + 1 tbsp toasted pine nuts + ½ clove garlic + squeeze lemon + pinch salt)' },
+      { id:'hf026_4', qty:2, unit:'clove', name:'garlic', alternates: [{ modeId:'paste', qty:2, unit:'tsp', name:'garlic paste' }] },
+      { id:'hf026_5', qty:2, unit:'tbsp', name:'mayonnaise' },
+      { id:'hf026_6', qty:1, unit:'unit', name:'red bell pepper, cut into ½-inch slices (buy whole, core and slice)' },
+      { id:'hf026_7', qty:56, unit:'g', name:'yellow onion, sliced (buy whole, slice ~½ onion)' },
+      { id:'hf026_8', qty:1, unit:'unit', name:'tomato, cut into ½-inch pieces' },
+      { id:'hf026_9', qty:0.5, unit:'cup', name:'couscous' },
+      { id:'hf026_10', qty:7.5, unit:'g', name:'chicken stock powder (bouillon)' },
+      { id:'hf026_11', qty:28, unit:'g', name:'sliced almonds' }
+    ],
+    steps: [
+      { id:'hf026_s1', phase:'prep', timerSec:300,
+        text:'Preheat the broiler to HIGH with a rack in the top position. Wash and dry all produce. In a medium pot, stir 7.5g chicken stock powder into ⅔ cup (160ml) water and season with a pinch of salt; bring to a boil over high heat. Once boiling, stir in ½ cup couscous, remove from heat, cover, and set aside 5 minutes to rehydrate. Meanwhile core and cut the bell pepper into ½-inch slices, cut the tomato into ½-inch pieces, and peel then mince or grate the 2 garlic cloves.' },
+      { id:'hf026_s2', phase:'cook', timerSec:330,
+        text:'Line a baking sheet with foil. Toss the sliced bell pepper with ½ tbsp olive oil, a pinch of salt and pepper, and spread in a single layer. Broil on the top rack 5-6 minutes, stirring halfway, until the peppers are golden and tender-crisp.',
+        airFryerAlt: { text:'Set Cuisinart air fryer to AIR FRY mode at 215°C, middle rack. Toss peppers with ½ tbsp oil, salt and pepper. Air fry ~4-5 minutes, shaking the basket once, until golden and tender-crisp.', timerSec:270 },
+        parallelTask:'While the peppers broil: pat the chicken dry and start the chicken step.' },
+      { id:'hf026_s3', phase:'cook', timerSec:540,
+        text:'Heat a large non-stick pan over medium-high. Pat the chicken pieces very dry with paper towels. In a large bowl, toss the chicken with the sliced onion, the za\'atar spice blend, 1 tbsp olive oil, and a pinch of salt and pepper until coated. When the pan is hot, add ½ tbsp olive oil and the chicken-onion mixture. Cook 8-10 minutes, turning occasionally, until golden and cooked through to an internal temp of 75°C (165°F). Deglaze the pan with 2 tbsp water and stir to combine.',
+        parallelTask:'While the chicken cooks: make the garlic mayo.' },
+      { id:'hf026_s4', phase:'prep', timerSec:null,
+        text:'In a small bowl, combine the 2 tbsp mayonnaise, the minced garlic, and ½ tbsp water. Season with a pinch of salt and pepper and stir into a smooth drizzle.',
+        pasteAlt: { text:'Swap the minced garlic for 2 tsp garlic paste. Whisk the paste directly into the mayo and water — no chopping needed; taste and add a squeeze more water if it is too thick.', timerSec:null } },
+      { id:'hf026_s5', phase:'plate', timerSec:null,
+        text:'Fluff the couscous with a fork and season with salt (stir in 1 tbsp butter for extra flavour). Divide the couscous between two bowls. Top with the roasted peppers, the chicken-onion mixture, and the chopped tomato. Drizzle the garlic mayo and the basil pesto over top, then sprinkle with the 28g sliced almonds.' }
+    ],
+    prepNote:'Protein swap (from card): instead of diced chicken you can use whole chicken breasts — pat dry, cut into 1-inch pieces, then season and cook exactly as the diced chicken above.'
+  },
+
+  // ==========================================================================
+  // 27. Chicken Tikka Masala with Garlic Rice  (recreated)
+  // ==========================================================================
+  {
+    id: 'hf_027',
+    mealType: 'dinner',
+    leftoverFriendly: true,
+    nutrition: { calories: 680, protein: 45, fat: 26, carbs: 62, fiber: 5, sodium: 1050 },
+    costcoSourcing: ['Kirkland boneless skinless chicken breasts', 'Kirkland organic basmati rice', 'Kirkland canned tomato passata/sauce', 'Kirkland heavy cream'],
+    title: 'Chicken Tikka Masala with Carrots and Garlic Rice',
+    servings: 2, timeMin: 30,
+    description: 'Spicy. High Protein. Creamy from-scratch tikka masala over fragrant garlic rice.',
+    tags: ['chicken','indian','spicy','high-protein'],
+    image: '🍛',
+    ingredients: [
+      { id:'hf027_1', qty:2, unit:'unit', name:'boneless skinless chicken breasts (~170g each)', protein:true },
+      { id:'hf027_2', qty:0.75, unit:'cup', name:'basmati rice' },
+      { id:'hf027_3', qty:1, unit:'unit', name:'carrot, cut in ¼-inch half-moons (buy whole, cut yourself)' },
+      { id:'hf027_4', qty:28, unit:'g', name:'baby spinach, roughly chopped' },
+      { id:'hf027_5', qty:1, unit:'clove', name:'garlic', alternates: [{ modeId:'paste', qty:1, unit:'tsp', name:'garlic paste' }] },
+      { id:'hf027_6', qty:0.5, unit:'cup', name:'tikka sauce (½ cup tomato passata + 1 tbsp tomato paste + 1 tsp garam masala + ½ tsp smoked paprika + ½ tsp ground cumin + ¼ tsp cayenne + ½ tsp sugar)' },
+      { id:'hf027_7', qty:2, unit:'tbsp', name:'curry paste (1 tbsp tomato paste + 2 tsp grated ginger + 1 tsp grated garlic + 1 tsp garam masala + ½ tsp turmeric + ½ tsp paprika + ¼ tsp cayenne + 1 tsp oil)' },
+      { id:'hf027_8', qty:4, unit:'g', name:'garlic salt' },
+      { id:'hf027_9', qty:56, unit:'ml', name:'heavy cream' },
+      { id:'hf027_10', qty:1, unit:'tbsp', name:'cooking oil (pantry)' },
+      { id:'hf027_11', qty:1, unit:'pinch', name:'salt and pepper (pantry)' }
+    ],
+    steps: [
+      { id:'hf027_s1', phase:'prep', timerSec:null,
+        text:'Before starting, wash and dry all produce. Peel, then mince or grate the garlic clove. Using a strainer, rinse the ¾ cup basmati rice under cold water until the water runs clear; drain well.' },
+      { id:'hf027_s2', phase:'cook', timerSec:840,
+        text:'Heat a medium pot over medium. When hot, add ½ tbsp oil, then the rinsed rice and minced garlic. Cook, stirring often, 1–2 min until fragrant. Add 1 ¼ cups water and half the garlic salt (2g). Bring to a boil over high, then reduce heat to low, cover, and cook 12–14 min until rice is tender and liquid is absorbed. Remove from heat and set aside, still covered.',
+        pasteAlt: { text:'Add ½ tbsp oil, the rice, and 1 tsp garlic paste. Stir constantly ~30 sec before adding water — paste scorches faster than minced garlic.', timerSec:840 },
+        parallelTask:'While the rice simmers: prep the carrot and spinach (step 3) and cook the carrots (step 4).' },
+      { id:'hf027_s3', phase:'prep', timerSec:null,
+        text:'Peel, then halve the carrot lengthwise. Cut into ¼-inch half-moons. Roughly chop the baby spinach.' },
+      { id:'hf027_s4', phase:'cook', timerSec:330,
+        text:'Heat a large non-stick pan over medium-high. When hot, add ½ cup water, then the carrots. Cook 5–6 min, stirring often, until the water is absorbed and carrots are tender-crisp. Season with salt and pepper, then transfer to a plate.' },
+      { id:'hf027_s5', phase:'cook', timerSec:300,
+        text:'Pat the chicken dry with paper towels. Cut into 1-inch pieces and season with the remaining garlic salt (2g) and pepper. Reheat the same pan over medium. When hot, add ½ tbsp oil, then the chicken. Cook 2–3 min per side until golden (it will finish cooking in the next step).' },
+      { id:'hf027_s6', phase:'cook', timerSec:390,
+        text:'To the pan with the chicken, add the curry paste. Cook 30 sec, stirring often, until fragrant. Reduce heat to medium-low, then add the tikka sauce, cream, and ¼ cup water. Cook 5–7 min, stirring occasionally, until the sauce thickens slightly and the chicken is cooked through (75°C/165°F). Add the carrots and chopped spinach; season with salt and pepper and stir 1–2 min until the spinach wilts.',
+        parallelTask:'While the sauce simmers: fluff the rice with a fork.' },
+      { id:'hf027_s7', phase:'plate', timerSec:null,
+        text:'Fluff the garlic rice with a fork. Divide the rice between plates and top with the chicken tikka masala.' }
+    ],
+    prepNote:'Protein swap (from the card): chicken thighs (270g) or organic chicken breasts (2) can be used in place of the chicken breasts — prep and cook them the same way.'
+  },
+
+  // ==========================================================================
+  // 28. Sausage and Mushroom Ragu with Rigatoni  (recreated)
+  // ==========================================================================
+  {
+    id: 'hf_028',
+    mealType: 'dinner',
+    leftoverFriendly: true,
+    nutrition: { calories: 730, protein: 34, fat: 34, carbs: 68, fiber: 6, sodium: 1120 },
+    costcoSourcing: ['Kirkland Italian sausage', 'Kirkland sliced cremini mushrooms', 'Kirkland canned crushed tomatoes', 'Kirkland shredded Parmesan'],
+    title: 'Sausage and Mushroom Ragu with Rigatoni',
+    servings: 2, timeMin: 25,
+    description: 'Family Friendly. A rustic one-pan ragu tossed through rigatoni with mushrooms and wilted spinach.',
+    tags: ['sausage','pork','italian','family-friendly','pasta'],
+    image: '🍝',
+    ingredients: [
+      { id:'hf028_1', qty:250, unit:'g', name:'mild Italian sausage, uncased (casings removed)', protein:true },
+      { id:'hf028_2', qty:170, unit:'g', name:'rigatoni' },
+      { id:'hf028_3', qty:113, unit:'g', name:'mushrooms, thinly sliced (buy whole, slice yourself)' },
+      { id:'hf028_4', qty:56, unit:'g', name:'yellow onion, chopped (buy whole, dice yourself)' },
+      { id:'hf028_5', qty:2, unit:'clove', name:'garlic', alternates: [{ modeId:'paste', qty:2, unit:'tsp', name:'garlic paste' }] },
+      { id:'hf028_6', qty:1, unit:'sprig', name:'rosemary (strip and finely chop ½ tsp leaves)' },
+      { id:'hf028_7', qty:56, unit:'g', name:'baby spinach, roughly chopped' },
+      { id:'hf028_8', qty:1, unit:'unit', name:'beef broth concentrate (1 tsp beef bouillon + 2 tbsp hot water, or 2 tbsp reduced beef stock)' },
+      { id:'hf028_9', qty:1, unit:'cup', name:'crushed tomatoes with garlic & onion (1 cup canned crushed tomatoes + ¼ tsp garlic powder + ¼ tsp onion powder + pinch salt)' },
+      { id:'hf028_10', qty:0.25, unit:'cup', name:'Parmesan cheese, shredded' },
+      { id:'hf028_11', qty:1, unit:'tbsp', name:'olive oil' }
+    ],
+    steps: [
+      { id:'hf028_s1', phase:'cook', timerSec:750,
+        text:'Bring a large pot of well-salted water to a boil over high heat. Wash and dry all produce. Add the rigatoni and cook 12–13 min, stirring occasionally, until tender but still firm to the bite. Reserve ½ cup pasta water, then drain and return the rigatoni to the pot, off heat.',
+        parallelTask:'While the pasta boils: slice the mushrooms, dice the onion, mince the garlic, chop the rosemary and spinach (step 2).' },
+      { id:'hf028_s2', phase:'prep', timerSec:null,
+        text:'Thinly slice the mushrooms. Peel and mince (or grate) the garlic. Strip the leaves from the rosemary sprig and finely chop ½ tsp. Roughly chop the baby spinach. Dice the onion if not already done.' },
+      { id:'hf028_s3', phase:'cook', timerSec:300,
+        text:'Heat a large non-stick skillet over medium-high. When hot, add ½ tbsp olive oil, then the onion and mushrooms. Cook 2–3 min, stirring, until softened. Add the uncased sausage and cook 4–5 min, breaking it into small crumbles, until no pink remains and it reaches 74°C (165°F). Add the garlic and chopped rosemary; cook 1 min more, stirring often, until fragrant. Season with salt and pepper.',
+        pasteAlt: { text:'If using garlic paste, add it with the rosemary and stir constantly for about 30 seconds — paste scorches faster than minced garlic.', timerSec:270 } },
+      { id:'hf028_s4', phase:'cook', timerSec:180,
+        text:'To the skillet, add the beef broth concentrate, the reserved pasta water and the crushed tomatoes with garlic & onion. Cook 2–3 min over medium heat, stirring, until the sauce thickens slightly and coats a spoon.' },
+      { id:'hf028_s5', phase:'plate', timerSec:60,
+        text:'Add the sauce and chopped spinach to the pot with the rigatoni. Stir over low heat about 1 min, until the spinach wilts and everything is well combined. Season with salt and pepper. Divide between bowls and sprinkle with shredded Parmesan.' }
+    ],
+    prepNote:'→ Protein swaps from the card: use 250g ground beef (cook the same way as the sausage, to 74°C/165°F), or 2 Impossible Burger Patties (cook 5–6 min, breaking into small pieces until crispy).'
   }
 
 ];
