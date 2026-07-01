@@ -1,7 +1,7 @@
 // Operations that read/write across multiple tables.
 // These take the data hook so they can call optimistic ops directly.
 
-import { foldName, normalizeUnit } from './utils';
+import { foldName, normalizeUnit, convertQty, pantryNameMatch } from './utils';
 
 // ============================================================================
 // AUTO-DEDUCT — when you cook a recipe, subtract used ingredients from pantry
@@ -14,56 +14,24 @@ export async function autoDeductPantry(recipe, scale, pantry, data) {
   const changes = [];
 
   for (const ing of recipe.ingredients) {
-    const ingFolded = foldName(ing.name);
     const ingUnit = normalizeUnit(ing.unit);
     const requiredQty = (ing.qty || 0) * scale;
     if (requiredQty <= 0) continue;
 
-    // Synonym map for common ingredient variants
-    const SYNONYMS = {
-      'paste': ['puree', 'purée', 'sauce', 'concentrate'],
-      'puree': ['paste', 'purée', 'sauce'],
-      'garlic': ['garlic clove', 'clove garlic', 'garlic bulb'],
-      'ginger': ['ginger root', 'fresh ginger'],
-      'lemongrass': ['lemon grass', 'lemon-grass'],
-    };
-    const fuzzyName = (a, b) => {
-      if (a === b) return true;
-      if (a.includes(b) || b.includes(a)) return true;
-      // Check if one is a synonym variant of the other
-      for (const [key, syns] of Object.entries(SYNONYMS)) {
-        if (a.includes(key)) {
-          if (syns.some(s => b.includes(s)) || b.includes(key)) return true;
-        }
-        if (b.includes(key)) {
-          if (syns.some(s => a.includes(s)) || a.includes(key)) return true;
-        }
-      }
-      return false;
-    };
-
-    // Find a pantry item with matching name + compatible unit.
-    // 1st pass: exact folded name + unit
-    // 2nd pass: fuzzy name (synonyms, paste/puree) + unit
-    // 3rd pass: fuzzy name, unit-agnostic (for items like garlic stored in 'unit' vs 'clove')
-    let match = pantry.find(p => {
-      const pFolded = foldName(p.name);
-      const pUnit = normalizeUnit(p.unit);
-      return pFolded === ingFolded && pUnit === ingUnit && p.qty > 0;
-    });
-    if (!match) match = pantry.find(p => {
-      const pFolded = foldName(p.name);
-      const pUnit = normalizeUnit(p.unit);
-      return fuzzyName(pFolded, ingFolded) && pUnit === ingUnit && p.qty > 0;
-    });
-    if (!match) match = pantry.find(p => {
-      const pFolded = foldName(p.name);
-      return fuzzyName(pFolded, ingFolded) && p.qty > 0;
-    });
+    // Match by name (exact/synonym), then deduct in the PANTRY item's unit.
+    const match = pantry.find(p => Number(p.qty) > 0 && pantryNameMatch(p.name, ing.name));
     if (!match) continue;
 
-    const consumed = Math.min(match.qty, requiredQty);
-    const newQty = Math.max(0, match.qty - consumed);
+    const pUnit = normalizeUnit(match.unit);
+    // Convert the required amount into the pantry item's unit. If the units are
+    // incompatible (e.g. recipe tsp vs a whole jar), skip rather than guess —
+    // the old code deducted the raw number regardless of unit, which turned
+    // "250 g" into "250 units" and wiped whole pantry items.
+    const reqInPantryUnit = convertQty(requiredQty, ingUnit, pUnit);
+    if (reqInPantryUnit == null) continue;
+    const consumed = Math.min(Number(match.qty), reqInPantryUnit);
+    if (consumed <= 0) continue;
+    const newQty = Math.max(0, Number(match.qty) - consumed);
     changes.push({
       pantryId: match.id,
       ingName: ing.name,

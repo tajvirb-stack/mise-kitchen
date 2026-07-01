@@ -9,7 +9,7 @@ import {
 import { formatQty, scaleStepText } from '../lib/utils';
 import { findComponentRecipe } from '../lib/components-decoder';
 import { findSubstitutes, suggestSimilarRecipes, suggestPantryFriendly, generateSmartWeekPlan, pairScore, pantryScore, buildSwappedIngredient, rewriteStepForSwap } from '../lib/suggestions';
-import { getNutrition, getPrimaryProtein } from '../lib/nutrition';
+import { getPrimaryProtein } from '../lib/nutrition';
 import { groupByAisle } from '../lib/aisles';
 import { autoDeductPantry, expiryStatus, suggestUseSoon, buildBatchPrepPlan, calcCookingStats, daysUntilExpiry } from '../lib/kitchen-ops';
 import { EQUIPMENT_MODES, INGREDIENT_MODES, fullyResolveStep, resolveIngredient, getSupportedEquipment, hasIngredientAlternates } from '../lib/recipe-variants';
@@ -17,7 +17,6 @@ import NutritionTotals from '../components/NutritionTotals';
 import SmartSuggestions from '../components/SmartSuggestions';
 import FoodLog from '../components/FoodLog';
 import { NutritionProvider, useNutritionContext } from '../components/NutritionContext';
-import { computeNutritionFromIngredients } from '../lib/nutrition-calc';
 import { generateMacroAwareWeekPlan, projectDailyMacros } from '../lib/macro-planner';
 import PantryScanModal from '../components/PantryScanModal';
 import {
@@ -1181,7 +1180,7 @@ function RecipesView({ data, setView, setActiveRecipeId }) {
       ...r,
       _pairScore: pairScore(r, data.recipes, data.weekPlan),
       _pantryScore: pantryScore(r, data.pantry),
-      _nutrition: getNutrition(r.id),
+      _nutrition: r.nutrition,
       _protein: getPrimaryProtein(r)
     }));
   }, [filtered, data.recipes, data.weekPlan, data.pantry]);
@@ -1721,7 +1720,7 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
 
         {/* Nutrition info */}
         {(() => {
-          const nut = getNutrition(recipe.id);
+          const nut = recipe.nutrition;
           if (!nut) return null;
           return (
             <div style={{

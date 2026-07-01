@@ -79,7 +79,7 @@ const AISLE_RULES = [
     'baking soda','baking powder','yeast','vanilla','vanilla extract','almond extract',
     'chocolate chip','cocoa','cacao','sprinkles',
     'canned tomato','crushed tomato','tomato sauce','marinara','tomato paste','passata',
-    'canned chickpea','canned bean','black bean','kidney bean','pinto bean','cannellini',
+    'chickpea','bean','canned chickpea','canned bean','black bean','kidney bean','pinto bean','cannellini',
     'lentil','split pea','dried bean',
     'canned tuna','canned salmon','canned sardine','canned anchovy',
     'broth','stock','bouillon','better than bouillon','chicken stock','beef broth','vegetable stock',
