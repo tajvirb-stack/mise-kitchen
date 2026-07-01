@@ -1536,7 +1536,10 @@ function RecipeView({ recipe, data, setView, setCookingStepIdx, setCookingScale,
   // Compute which equipment modes + ingredient modes this recipe supports
   const supportedEquipment = useMemo(() => getSupportedEquipment(recipe), [recipe]);
   const hasIngAlts = useMemo(() => hasIngredientAlternates(recipe), [recipe]);
-  const eqMode = modes?.equipmentMode || 'oven';
+  // Honour the global preference only if this recipe supports it; otherwise fall
+  // back to the recipe's primary method (supportedEquipment[0]) so the toggle
+  // always has a valid, highlighted selection.
+  const eqMode = supportedEquipment.includes(modes?.equipmentMode) ? modes.equipmentMode : supportedEquipment[0];
   const ingMode = modes?.ingredientMode || 'fresh';
 
   // Compute the parallel cook plan so we can show time savings on the Start button
@@ -2064,7 +2067,10 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
   // is shown — just closes the dialog instead of re-running everything.
   const cookCommittedRef = useRef(false);
 
-  const eqMode = modes?.equipmentMode || 'oven';
+  // Match the detail view: use the global preference only if this recipe supports
+  // it, else the recipe's primary method — so timers/mode stay consistent.
+  const supportedEquipment = useMemo(() => getSupportedEquipment(recipe), [recipe]);
+  const eqMode = supportedEquipment.includes(modes?.equipmentMode) ? modes.equipmentMode : supportedEquipment[0];
   const ingMode = modes?.ingredientMode || 'fresh';
 
   // Resolve all steps for current equipment/ingredient mode

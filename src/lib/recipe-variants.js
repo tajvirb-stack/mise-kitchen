@@ -9,10 +9,35 @@
 // user has selected that mode.
 
 export const EQUIPMENT_MODES = {
+  stovetop: { id: 'stovetop', label: 'Stovetop', icon: '🍳', shortLabel: 'stovetop' },
   oven: { id: 'oven', label: 'Oven', icon: '🔥', shortLabel: 'oven' },
-  airFryer: { id: 'airFryer', label: 'Air fryer', icon: '🌪️', shortLabel: 'air fryer' },
-  stovetop: { id: 'stovetop', label: 'Stovetop', icon: '🍳', shortLabel: 'stovetop' }
+  grill: { id: 'grill', label: 'Grill', icon: '🔥', shortLabel: 'grill' },
+  airFryer: { id: 'airFryer', label: 'Air fryer', icon: '🌪️', shortLabel: 'air fryer' }
 };
+
+// Detect the recipe's PRIMARY cooking method from its main step text, so the
+// base mode is labelled honestly (a stir-fry reads "Stovetop", a roast "Oven",
+// jerk pork "Grill") instead of always defaulting to "Oven". Alt text
+// (airFryerAlt/stovetopAlt) is intentionally ignored — only what's written.
+const METHOD_KEYWORDS = {
+  oven: ['oven', 'roast', 'bake', 'broil', 'sheet pan'],
+  grill: ['grill', 'barbecue', 'bbq'],
+  stovetop: ['skillet', 'saucepan', 'non-stick pan', 'frying pan', 'pan over', 'saut', 'stir-fry', 'stir fry', 'wok', 'simmer', 'boil', 'stovetop', 'stove'],
+};
+export function detectPrimaryMethod(recipe) {
+  const text = (recipe?.steps || []).map(s => (s.text || '')).join(' ').toLowerCase();
+  const count = kw => text.split(kw).length - 1;
+  const score = {
+    oven: METHOD_KEYWORDS.oven.reduce((a, k) => a + count(k), 0),
+    grill: METHOD_KEYWORDS.grill.reduce((a, k) => a + count(k), 0),
+    stovetop: METHOD_KEYWORDS.stovetop.reduce((a, k) => a + count(k), 0),
+  };
+  // Highest wins; tie or no signal → stovetop (the most common base method).
+  let best = 'stovetop';
+  if (score.oven > score[best]) best = 'oven';
+  if (score.grill > score[best]) best = 'grill';
+  return best;
+}
 
 // Return the step text + timer for the current equipment mode.
 // Falls back to main text if the mode isn't supported by this step.
@@ -33,17 +58,21 @@ export function resolveStep(step, mode) {
   return { text: step.text, timerSec: step.timerSec };
 }
 
-// Determine which equipment modes this recipe supports.
-// A mode is supported if AT LEAST ONE step has an alt for it,
-// AND we always include 'oven' as the default mode for any recipe.
+// Determine which equipment modes this recipe supports. The FIRST entry is the
+// recipe's primary (base) method — the one the main step text is written for —
+// followed by any alternative methods that at least one step provides an alt for.
 export function getSupportedEquipment(recipe) {
-  if (!recipe?.steps) return ['oven'];
-  const modes = new Set(['oven']);
+  if (!recipe?.steps) return ['stovetop'];
+  const primary = detectPrimaryMethod(recipe);
+  const modes = [primary];
+  let hasAirFryer = false, hasStovetopAlt = false;
   for (const step of recipe.steps) {
-    if (step.airFryerAlt) modes.add('airFryer');
-    if (step.stovetopAlt) modes.add('stovetop');
+    if (step.airFryerAlt) hasAirFryer = true;
+    if (step.stovetopAlt) hasStovetopAlt = true;
   }
-  return Array.from(modes);
+  if (hasAirFryer && primary !== 'airFryer') modes.push('airFryer');
+  if (hasStovetopAlt && primary !== 'stovetop') modes.push('stovetop');
+  return modes;
 }
 
 // ============================================================================
