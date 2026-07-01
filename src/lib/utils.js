@@ -131,6 +131,10 @@ export function detectPrepTasks(weekPlan, recipes) {
     if (!r) return;
     const scale = w.servings / r.servings;
     (r.ingredients || []).forEach(ing => {
+      // Skip compound spice blends / sauces — their embedded breakdown
+      // (e.g. "…¼ tsp ginger…") would otherwise trigger phantom fresh-prep
+      // tasks with nonsensical (tbsp-of-dry-blend) quantities.
+      if (parseCompoundComponents(ing.name)) return;
       const lower = (ing.name || '').toLowerCase();
       let prep = null;
       if (/\b(garlic|clove)\b/.test(lower)) prep = 'mince garlic';
@@ -152,6 +156,74 @@ export function detectPrepTasks(weekPlan, recipes) {
   return Object.values(tasks).map(t => ({ ...t, recipes: [...t.recipes] })).filter(t => t.recipes.length >= 1);
 }
 
+// ============================================================================
+// FROM-SCRATCH BLEND EXPANSION
+// ============================================================================
+// Our recipes name compound components with their breakdown embedded in the
+// name, e.g. "Moroccan spice blend (1 tsp cumin + ½ tsp paprika + …)" or
+// "ginger sauce (3 tbsp soy + 1 tsp rice vinegar + …)". For a grocery list those
+// opaque names are unbuyable and never match your pantry spices. These helpers
+// parse the parenthetical into individual shoppable components.
+
+const COMPONENT_UNITS = new Set([
+  'tsp','teaspoon','teaspoons','tbsp','tablespoon','tablespoons','cup','cups',
+  'g','gram','grams','kg','ml','l','oz','lb','clove','cloves','inch','stalk',
+  'sprig','can','slice','slices','piece','pieces'
+]);
+const VAGUE_QTY = { pinch: 0.0625, dash: 0.0625, splash: 0.5, squeeze: 0.5, handful: 0.25 };
+
+// Drop trailing method notes ("sugar, simmered 2 min" → "sugar") and leading
+// prep adjectives grocery doesn't care about ("ground cumin" → "cumin"). Keeps
+// distinguishing words like "smoked"/"toasted" that denote a different product.
+function cleanComponentName(s) {
+  let n = (s || '').split(',')[0].trim();
+  n = n.replace(/^(ground|grated|minced|chopped|crushed|fresh|dried)\s+/i, '');
+  return n.trim();
+}
+
+function parseComponentSegment(seg) {
+  const s = seg.trim();
+  const vague = s.match(/^(pinch|dash|splash|squeeze|handful)\s+(?:of\s+)?(.+)$/i);
+  if (vague) return { qty: VAGUE_QTY[vague[1].toLowerCase()] ?? 0.125, unit: 'tsp', name: cleanComponentName(vague[2]) };
+  const m = s.match(/^(\d+(?:\.\d+)?[¼½¾⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]?|[¼½¾⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])\s+(.+)$/);
+  if (!m) return null;
+  const qty = parseQty(m[1]);
+  if (isNaN(qty)) return null;
+  const words = m[2].trim().split(/\s+/);
+  const firstWord = words[0].toLowerCase().replace(/\.$/, '');
+  let unit = 'unit', rest = m[2].trim();
+  if (COMPONENT_UNITS.has(firstWord)) { unit = normalizeUnit(firstWord); rest = words.slice(1).join(' '); }
+  const name = cleanComponentName(rest);
+  if (!name) return null;
+  return { qty, unit, name };
+}
+
+// If an ingredient name embeds a "+"-separated breakdown, return its components;
+// otherwise null (the name is a plain ingredient or a non-breakdown note).
+export function parseCompoundComponents(name) {
+  if (!name) return null;
+  const m = name.match(/\(([^()]*\+[^()]*)\)/);
+  if (!m) return null;
+  const inner = m[1].replace(/^\s*made from\s+/i, '');
+  const segments = inner.split('+').map(s => s.trim()).filter(Boolean);
+  if (segments.length < 2) return null;
+  const parts = [];
+  for (const seg of segments) {
+    const c = parseComponentSegment(seg);
+    if (!c) return null; // not a clean breakdown — leave the ingredient intact
+    parts.push(c);
+  }
+  return parts;
+}
+
+// Expand one recipe ingredient into shoppable line items. A from-scratch blend
+// becomes its component spices/liquids; everything else passes through unchanged.
+export function expandIngredient(ing) {
+  const comps = parseCompoundComponents(ing.name);
+  if (comps) return comps.map(c => ({ qty: c.qty, unit: c.unit, name: c.name, protein: false, fromBlend: ing.name }));
+  return [{ qty: ing.qty || 0, unit: ing.unit, name: ing.name, protein: !!ing.protein }];
+}
+
 export function aggregateWeeklyIngredients(weekPlan, recipes) {
   const map = {};
   weekPlan.forEach(w => {
@@ -159,12 +231,15 @@ export function aggregateWeeklyIngredients(weekPlan, recipes) {
     if (!r) return;
     const scale = w.servings / r.servings;
     (r.ingredients || []).forEach(ing => {
-      const key = foldName(ing.name) + '|' + ing.unit;
-      if (!map[key]) {
-        map[key] = { name: ing.name, unit: ing.unit, qty: 0, sources: [], protein: !!ing.protein };
-      }
-      map[key].qty += (ing.qty || 0) * scale;
-      map[key].sources.push({ recipeId: r.id, recipeTitle: r.title });
+      expandIngredient(ing).forEach(comp => {
+        const unit = normalizeUnit(comp.unit);
+        const key = foldName(comp.name) + '|' + unit;
+        if (!map[key]) {
+          map[key] = { name: comp.name, unit, qty: 0, sources: [], protein: !!comp.protein };
+        }
+        map[key].qty += (comp.qty || 0) * scale;
+        map[key].sources.push({ recipeId: r.id, recipeTitle: r.title });
+      });
     });
   });
   return Object.values(map);
