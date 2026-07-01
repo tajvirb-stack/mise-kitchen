@@ -2080,36 +2080,55 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
   // remaining = Math.ceil((deadline - Date.now()) / 1000)
   // This approach survives phone lock: when JS resumes, Date.now() reflects
   // real wall-clock time so the remaining computation is always accurate.
-  const timerStorageKey = `mise_timers_${recipe.id}`;
-  const [timers, setTimers] = useState(() => {
-    // Try to restore timers from sessionStorage (survives iOS remount on unlock)
+  // Key timers by equipment+ingredient mode: air-fryer steps have different
+  // durations than oven, so each mode gets its own persisted timer set instead
+  // of reusing stale oven timings.
+  const timerStorageKey = `mise_timers_${recipe.id}_${eqMode}_${ingMode}`;
+
+  // Build fresh timers from the MODE-RESOLVED steps, so each timer's duration
+  // matches the step text the cook is reading (air-fryer time, not oven time).
+  // A resolved timerSec of 0/null (e.g. a "skip in air-fryer" step) gets no timer.
+  const buildFreshTimers = (steps) => {
+    const t = {};
+    for (const s of steps) {
+      if (s.timerSec) t[s.id] = { initial: s.timerSec, deadline: null, remaining: s.timerSec, running: false, done: false };
+    }
+    return t;
+  };
+  // Restore a persisted set for this key (survives iOS remount on unlock), else fresh.
+  const restoreTimers = (key, steps) => {
     try {
-      const saved = localStorage.getItem(timerStorageKey);
+      const saved = localStorage.getItem(key);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Validate: if any running timer has a deadline in the past, mark done
         const now = Date.now();
         for (const id of Object.keys(parsed)) {
           const t = parsed[id];
           if (t.running && t.deadline) {
             const remaining = Math.max(0, Math.ceil((t.deadline - now) / 1000));
-            if (remaining <= 0) {
-              parsed[id] = { ...t, remaining: 0, running: false, done: true };
-            } else {
-              parsed[id] = { ...t, remaining };
-            }
+            parsed[id] = remaining <= 0
+              ? { ...t, remaining: 0, running: false, done: true }
+              : { ...t, remaining };
           }
         }
         return parsed;
       }
     } catch {}
-    // Fresh init
-    const t = {};
-    for (const s of (recipe.steps || [])) {
-      if (s.timerSec) t[s.id] = { initial: s.timerSec, deadline: null, remaining: s.timerSec, running: false, done: false };
+    return buildFreshTimers(steps);
+  };
+
+  const [timers, setTimers] = useState(() => restoreTimers(timerStorageKey, allSteps));
+
+  // When the equipment/ingredient mode changes the storage key changes too —
+  // reload that mode's timers (or build fresh from the resolved steps) so the
+  // countdowns and progress bar stay in sync with the displayed step.
+  const timerKeyRef = useRef(timerStorageKey);
+  useEffect(() => {
+    if (timerKeyRef.current !== timerStorageKey) {
+      timerKeyRef.current = timerStorageKey;
+      setTimers(restoreTimers(timerStorageKey, allSteps));
     }
-    return t;
-  });
+  }, [timerStorageKey, allSteps]);
 
   // Checked steps (completed)
   const [checked, setChecked] = useState(new Set());
@@ -2245,7 +2264,9 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
           const timer = timers[step.id];
           const isChecked = checked.has(step.id);
           const bullets = splitStepIntoBullets(step.text);
-          const pct = timer && step.timerSec > 0 ? ((step.timerSec - timer.remaining) / step.timerSec) * 100 : 0;
+          // Drive the bar off the timer's own starting duration (not step.timerSec)
+          // and clamp, so it can't render inverted/overfull if the two ever diverge.
+          const pct = timer && timer.initial > 0 ? Math.max(0, Math.min(100, ((timer.initial - timer.remaining) / timer.initial) * 100)) : 0;
 
           return (
             <React.Fragment key={step.id}>
@@ -2356,7 +2377,7 @@ function CookingMode({ recipe, stepIdx, setStepIdx, scale = 1, setView, data, mo
               </div>
 
               {/* Timer progress bar */}
-              {timer && !timer.done && step.timerSec > 0 && (
+              {timer && !timer.done && timer.initial > 0 && (
                 <div style={{ height: 3, background: '#F0E6D2', borderRadius: 2, margin: '0 0 10px 36px', overflow: 'hidden' }}>
                   <div style={{ height: '100%', background: phase.color, width: `${pct}%`, transition: 'width 1s linear' }} />
                 </div>
