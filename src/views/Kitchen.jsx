@@ -18,7 +18,7 @@ import SmartSuggestions from '../components/SmartSuggestions';
 import FoodLog from '../components/FoodLog';
 import { NutritionProvider, useNutritionContext } from '../components/NutritionContext';
 import { computeNutritionFromIngredients } from '../lib/nutrition-calc';
-import { generateMacroAwareWeekPlan } from '../lib/macro-planner';
+import { generateMacroAwareWeekPlan, projectDailyMacros } from '../lib/macro-planner';
 import PantryScanModal from '../components/PantryScanModal';
 import {
   ReceiptScanModal,
@@ -2616,10 +2616,10 @@ function WeekView({ data, setView, setActiveRecipeId }) {
     const cuisines = new Set();
 
     orderedPlans.forEach(({ plan, recipe }) => {
-      const nut = getNutrition(recipe.id);
+      const nut = recipe.nutrition;  // real per-serving macros from the DB recipe
       if (nut) {
-        totalCals += nut.calories * plan.servings;
-        totalProtein += nut.protein * plan.servings;
+        totalCals += (nut.calories || 0) * plan.servings;
+        totalProtein += (nut.protein || 0) * plan.servings;
       }
       proteins.push(getPrimaryProtein(recipe));
       (recipe.tags || []).forEach(t => {
@@ -2639,13 +2639,33 @@ function WeekView({ data, setView, setActiveRecipeId }) {
 
     return {
       totalMeals: orderedPlans.length,
-      totalCals,
-      totalProtein,
+      totalCals: Math.round(totalCals),
+      totalProtein: Math.round(totalProtein),
       uniqueProteins: new Set(proteins.filter(p => p !== 'other')).size,
       uniqueCuisines: cuisines.size,
       varietyIssues: [...new Set(varietyIssues)]
     };
   }, [data.weekPlan, data.recipes]);
+
+  const { targets } = useNutritionContext();
+
+  // Per-day macro forecast from the planned meals, vs the user's daily targets.
+  const forecast = (() => {
+    const perDay = days.map(dayObj => {
+      const code = typeof dayObj === 'string' ? dayObj : dayObj.code;
+      const dayPlans = data.weekPlan.filter(w => w.day === code);
+      const m = projectDailyMacros(dayPlans, data.recipes);
+      return { code, calories: Math.round(m.calories), protein: Math.round(m.protein), fiber: Math.round(m.fiber), hasMeals: dayPlans.length > 0 };
+    });
+    const planned = perDay.filter(d => d.hasMeals && (d.calories > 0 || d.protein > 0));
+    const n = planned.length || 1;
+    const avg = {
+      calories: Math.round(planned.reduce((a, d) => a + d.calories, 0) / n),
+      protein: Math.round(planned.reduce((a, d) => a + d.protein, 0) / n),
+      fiber: Math.round(planned.reduce((a, d) => a + d.fiber, 0) / n),
+    };
+    return { perDay, avg, plannedCount: planned.length, hasData: planned.length > 0 };
+  })();
 
   return (
     <div className="fade-in">
@@ -2684,6 +2704,49 @@ function WeekView({ data, setView, setActiveRecipeId }) {
               {summary.uniqueProteins} protein{summary.uniqueProteins === 1 ? '' : 's'} · {summary.uniqueCuisines} cuisine{summary.uniqueCuisines === 1 ? '' : 's'}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Weekly macro forecast — projected from planned meals vs daily targets */}
+      {data.weekPlan.length > 0 && forecast.hasData && targets && (
+        <div style={{ background: '#fff', border: '1px solid #E8DDC9', borderRadius: 10, padding: '14px 16px', marginBottom: 14 }}>
+          <div className="sans" style={{ fontSize: 10, color: '#8B6F47', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Weekly forecast · avg/day across {forecast.plannedCount} planned day{forecast.plannedCount === 1 ? '' : 's'}
+          </div>
+          {[
+            { label: 'Protein', val: forecast.avg.protein, target: targets.protein_target, unit: 'g', color: '#A85C32' },
+            { label: 'Calories', val: forecast.avg.calories, target: targets.calories_target, unit: '', color: '#5C4A3A' },
+            { label: 'Fiber', val: forecast.avg.fiber, target: targets.fiber_target, unit: 'g', color: '#5C7A3A' },
+          ].map(m => {
+            const pct = m.target ? Math.min(100, Math.round((m.val / m.target) * 100)) : 0;
+            return (
+              <div key={m.label} style={{ marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#5C4A3A', marginBottom: 3 }}>
+                  <span className="sans">{m.label}</span>
+                  <span className="sans"><strong style={{ color: m.color }}>{m.val}{m.unit}</strong> / {m.target}{m.unit} avg/day</span>
+                </div>
+                <div style={{ height: 6, background: '#F0E6D2', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${pct}%`, background: m.color, borderRadius: 3 }} />
+                </div>
+              </div>
+            );
+          })}
+          <div style={{ display: 'flex', gap: 4, marginTop: 12, alignItems: 'flex-end' }}>
+            {forecast.perDay.map(d => {
+              const t = targets.protein_target || 190;
+              const h = Math.max(3, Math.min(100, (d.protein / t) * 100));
+              const hit = d.protein >= t * 0.9;
+              return (
+                <div key={d.code} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                  <div style={{ width: '100%', height: 32, display: 'flex', alignItems: 'flex-end' }}>
+                    <div title={`${d.protein}g protein`} style={{ width: '100%', height: `${h}%`, background: d.hasMeals ? (hit ? '#5C7A3A' : '#D9A15C') : '#F0E6D2', borderRadius: '3px 3px 0 0' }} />
+                  </div>
+                  <span className="sans" style={{ fontSize: 9, color: '#8B6F47' }}>{d.code[0]}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="sans" style={{ fontSize: 10, color: '#A89379', marginTop: 6, fontStyle: 'italic' }}>Protein per planned day vs target — bars turn green at 90%+ of goal.</div>
         </div>
       )}
 
@@ -2738,7 +2801,7 @@ function WeekView({ data, setView, setActiveRecipeId }) {
                 {slotPlans.map(w => {
                   const r = data.recipes.find(x => x.id === w.recipe_id);
                   if (!r) return null;
-                  const nut = getNutrition(r.id);
+                  const nut = r.nutrition;
                   return (
                     <div key={w.id} style={{
                       background: '#FAF6EF', borderRadius: 8, padding: 10, position: 'relative'
